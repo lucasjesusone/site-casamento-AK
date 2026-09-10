@@ -378,15 +378,16 @@
   padding: 12px 0 0;
 }
 
+.location {
+  margin-top: 30px;
+  padding: 12px 0 0;
+}
+
 .location-header {
   margin-bottom: 18px;
 
   .eyebrow {
-    margin: 0 0 8px;
-    font-size: 0.72rem;
-    letter-spacing: 0.2rem;
-    text-transform: uppercase;
-    color: var(--text-soft);
+    margin-bottom: 8px;
   }
 
   h2 {
@@ -400,7 +401,7 @@
 
 .location-grid {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: 1.05fr 0.95fr;
   gap: 34px;
   align-items: center;
   padding: 8px 0 0;
@@ -422,7 +423,7 @@
   height: 100%;
   min-height: 370px;
   object-fit: cover;
-  filter: saturate(0.9) contrast(1.02);
+  object-position: center;
 }
 
 .location-info {

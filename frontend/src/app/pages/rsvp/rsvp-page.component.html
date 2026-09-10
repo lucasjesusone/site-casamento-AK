@@ -1,0 +1,62 @@
+<main class="rsvp-shell">
+  <section class="rsvp-card" *ngIf="invite; else invalidInvite">
+    <p class="eyebrow">Convite exclusivo</p>
+    <h1>Confirme sua presença</h1>
+    <p class="family-name">{{ invite.familyName }}</p>
+
+    <div class="meta">
+      <span>Limite por família: {{ invite.maxGuests }} convidados</span>
+      <span>Vagas restantes: {{ rsvpService.getRemainingSlots(invite.token) }}</span>
+    </div>
+
+    <form class="rsvp-form" (ngSubmit)="submit()" #formRef="ngForm">
+      <label>
+        Nome completo
+        <input type="text" name="name" [(ngModel)]="form.name" required />
+      </label>
+
+      <label>
+        E-mail
+        <input type="email" name="email" [(ngModel)]="form.email" required />
+      </label>
+
+      <label>
+        Quantidade de convidados
+        <input type="number" name="guests" min="0" max="{{ invite.maxGuests }}" [(ngModel)]="form.guests" required />
+      </label>
+
+      <label>
+        Sua resposta
+        <select name="attending" [(ngModel)]="form.attending">
+          <option value="sim">Confirmo presença</option>
+          <option value="nao">Não posso comparecer</option>
+        </select>
+      </label>
+
+      <label>
+        Mensagem
+        <textarea name="message" rows="4" [(ngModel)]="form.message" placeholder="Deixe uma mensagem para nós..."></textarea>
+      </label>
+
+      <button type="submit" class="button button-primary" [disabled]="isSubmitting || !formRef.form.valid">
+        {{ isSubmitting ? 'Enviando...' : 'Enviar confirmação' }}
+      </button>
+    </form>
+
+    <p class="status success" *ngIf="successMessage">{{ successMessage }}</p>
+    <p class="status error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+    <div class="footer-link">
+      <a [routerLink]="['/']">Voltar para a página inicial</a>
+    </div>
+  </section>
+
+  <ng-template #invalidInvite>
+    <section class="rsvp-card invalid">
+      <p class="eyebrow">Convite inválido</p>
+      <h1>Link não encontrado</h1>
+      <p>Este convite não existe ou já não está mais ativo.</p>
+      <a class="button button-primary" [routerLink]="['/']">Voltar para o início</a>
+    </section>
+  </ng-template>
+</main>

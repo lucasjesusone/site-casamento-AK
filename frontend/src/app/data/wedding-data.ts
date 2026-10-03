@@ -18,7 +18,7 @@ export interface GalleryItem {
 export const weddingData = {
   couple: {
     names: 'Ana Karinne & Lucas Gabriel',
-    short: 'AK & LG',
+    short: 'A & L',
     date: '10 de julho de 2027',
     headline: 'Vamos celebrar o começo da nossa história',
     subtitle:

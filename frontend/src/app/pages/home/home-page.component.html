@@ -33,7 +33,9 @@
 
     <div class="hero-visual" aria-label="Imagem decorativa do casal">
       <div class="frame">
-        <div class="photo-card"></div>
+        <div class="photo-card">
+          <img src="assets/casal.jpg" alt="Ana Karinne e Lucas Gabriel" />
+        </div>
       </div>
     </div>
   </section>
@@ -106,11 +108,7 @@
         [attr.aria-label]="'Foto ' + (galleryIndex + 1) + ' de ' + gallery.length"
         aria-live="polite"
       >
-        <img [src]="getImageUrl(activeGalleryItem.imageUrl)" [alt]="activeGalleryItem.title" />
-        <div class="gallery-caption">
-          <span>{{ activeGalleryItem.title }}</span>
-          <span class="gallery-count">{{ galleryIndex + 1 }} / {{ gallery.length }}</span>
-        </div>
+        <img [src]="getImageUrl(activeGalleryItem.imageUrl)"         alt="" />
         @if (gallery.length > 1) {
           <button
             type="button"

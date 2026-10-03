@@ -57,7 +57,7 @@ export class AdminPageComponent implements OnInit {
         ...(this.editingId ? { id: this.editingId } : {}),
         title: this.form.title,
         description: this.form.description,
-        amount: Number(this.form.amount),
+        amount: this.parseAmount(this.form.amount),
         imageUrl: this.form.imageUrl
       });
       const existingIndex = this.gifts.findIndex((gift) => gift.id === saved.id);
@@ -78,7 +78,7 @@ export class AdminPageComponent implements OnInit {
     this.form = {
       title: gift.title,
       description: gift.description,
-      amount: gift.amount,
+      amount: String(gift.amount).replace('.', ','),
       imageUrl: gift.imageUrl
     };
     this.message = '';
@@ -166,8 +166,13 @@ export class AdminPageComponent implements OnInit {
     }
   }
 
-  private emptyForm(): { title: string; description: string; amount: number | null; imageUrl: string } {
-    return { title: '', description: '', amount: null, imageUrl: '' };
+  private parseAmount(value: string): number {
+    const text = value.trim();
+    return Number(text.includes(',') ? text.replace(/\./g, '').replace(',', '.') : text);
+  }
+
+  private emptyForm(): { title: string; description: string; amount: string; imageUrl: string } {
+    return { title: '', description: '', amount: '', imageUrl: '' };
   }
 
   private errorMessage(error: unknown): string {

@@ -128,8 +128,71 @@ function requireAdmin(authorization: string | undefined, reply: { code: (statusC
 }
 
 const app = Fastify({
-  logger: true
+  logger: true,
+  trustProxy: true
 });
+
+const rsvpAttempts = new Map<string, { count: number; resetAt: number }>();
+
+function isRsvpRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rsvpAttempts.get(ip);
+  if (!entry || entry.resetAt <= now) {
+    rsvpAttempts.set(ip, { count: 1, resetAt: now + 60_000 });
+    if (rsvpAttempts.size > 5000) {
+      for (const [key, value] of rsvpAttempts) {
+        if (value.resetAt <= now) {
+          rsvpAttempts.delete(key);
+        }
+      }
+    }
+    return false;
+  }
+  entry.count += 1;
+  return entry.count > 30;
+}
+
+type GuestCategory = 'adult' | 'child_half' | 'child_free';
+type GuestStatus = 'pending' | 'confirmed' | 'declined';
+const guestCategories: GuestCategory[] = ['adult', 'child_half', 'child_free'];
+
+interface GuestRow extends QueryResultRow {
+  id: string;
+  family_id: string;
+  name: string;
+  category: GuestCategory;
+  status: GuestStatus;
+  responded_at: string | null;
+}
+
+interface FamilyRow extends QueryResultRow {
+  id: string;
+  name: string;
+  code: string;
+  created_at: string;
+}
+
+function mapGuest(row: GuestRow) {
+  return { id: row.id, name: row.name, category: row.category, status: row.status, respondedAt: row.responded_at };
+}
+
+function generateFamilyCode(): string {
+  return randomBytes(9).toString('base64url');
+}
+
+async function readFamilies() {
+  const families = await database.query<FamilyRow>('select id, name, code, created_at from families order by name asc');
+  const guests = await database.query<GuestRow>(
+    'select id, family_id, name, category, status, responded_at from guests order by family_id, position asc, name asc'
+  );
+  return families.rows.map((family) => ({
+    id: family.id,
+    name: family.name,
+    code: family.code,
+    createdAt: family.created_at,
+    guests: guests.rows.filter((guest) => guest.family_id === family.id).map(mapGuest)
+  }));
+}
 
 async function start() {
   const sourceDirectory = dirname(fileURLToPath(import.meta.url));
@@ -551,6 +614,142 @@ async function start() {
 
     const { id } = request.params as { id: string };
     await database.query('delete from gifts where id = $1', [id]);
+    return reply.code(204).send();
+  });
+
+  app.get('/api/rsvp/:code', async (request, reply) => {
+    if (isRsvpRateLimited(request.ip)) {
+      return reply.code(429).send({ error: 'Muitas tentativas. Aguarde um minuto e tente novamente.' });
+    }
+
+    const { code } = request.params as { code: string };
+    const family = (await database.query<FamilyRow>('select id, name, code, created_at from families where code = $1', [code])).rows[0];
+    if (!family) {
+      return reply.code(404).send({ error: 'Convite não encontrado.' });
+    }
+
+    const guests = await database.query<GuestRow>(
+      'select id, family_id, name, category, status, responded_at from guests where family_id = $1 order by position asc, name asc',
+      [family.id]
+    );
+    return { familyName: family.name, guests: guests.rows.map(mapGuest) };
+  });
+
+  app.post('/api/rsvp/:code', async (request, reply) => {
+    if (isRsvpRateLimited(request.ip)) {
+      return reply.code(429).send({ error: 'Muitas tentativas. Aguarde um minuto e tente novamente.' });
+    }
+
+    const { code } = request.params as { code: string };
+    const body = (request.body || {}) as { responses?: Array<{ guestId?: string; status?: string }> };
+    if (!Array.isArray(body.responses) || body.responses.length === 0 || body.responses.length > 50) {
+      return reply.code(400).send({ error: 'Envie a resposta de cada integrante.' });
+    }
+    if (body.responses.some((item) => typeof item.guestId !== 'string' || !['confirmed', 'declined'].includes(item.status || ''))) {
+      return reply.code(400).send({ error: 'Resposta inválida.' });
+    }
+
+    const family = (await database.query<FamilyRow>('select id, name, code, created_at from families where code = $1', [code])).rows[0];
+    if (!family) {
+      return reply.code(404).send({ error: 'Convite não encontrado.' });
+    }
+
+    const now = new Date().toISOString();
+    for (const item of body.responses) {
+      await database.query(
+        'update guests set status = $1, responded_at = $2 where id = $3 and family_id = $4',
+        [item.status, now, item.guestId, family.id]
+      );
+    }
+
+    const guests = await database.query<GuestRow>(
+      'select id, family_id, name, category, status, responded_at from guests where family_id = $1 order by position asc, name asc',
+      [family.id]
+    );
+    return { familyName: family.name, guests: guests.rows.map(mapGuest) };
+  });
+
+  app.get('/api/admin/families', async (request, reply) => {
+    if (!requireAdmin(request.headers.authorization, reply)) {
+      return;
+    }
+
+    return readFamilies();
+  });
+
+  app.post('/api/admin/families', async (request, reply) => {
+    if (!requireAdmin(request.headers.authorization, reply)) {
+      return;
+    }
+
+    const body = (request.body || {}) as {
+      id?: string;
+      name?: string;
+      guests?: Array<{ id?: string; name?: string; category?: string }>;
+    };
+    const name = body.name?.trim();
+    const guests = Array.isArray(body.guests) ? body.guests : [];
+    if (!name || name.length > 90 || guests.length === 0 || guests.length > 30) {
+      return reply.code(400).send({ error: 'Informe o nome da família e ao menos um integrante.' });
+    }
+    if (guests.some((guest) => !guest.name?.trim() || guest.name.length > 90 || !guestCategories.includes(guest.category as GuestCategory))) {
+      return reply.code(400).send({ error: 'Cada integrante precisa de nome e categoria válidos.' });
+    }
+
+    const familyId = body.id || crypto.randomUUID();
+    const client = await database.connect();
+    try {
+      await client.query('begin');
+      await client.query(
+        `insert into families (id, name, code, created_at) values ($1, $2, $3, $4)
+         on conflict(id) do update set name = excluded.name`,
+        [familyId, name, generateFamilyCode(), new Date().toISOString()]
+      );
+
+      const keptIds: string[] = [];
+      for (const [position, guest] of guests.entries()) {
+        const guestId = guest.id || crypto.randomUUID();
+        keptIds.push(guestId);
+        await client.query(
+          `insert into guests (id, family_id, name, category, position) values ($1, $2, $3, $4, $5)
+           on conflict(id) do update set name = excluded.name, category = excluded.category, position = excluded.position
+           where guests.family_id = excluded.family_id`,
+          [guestId, familyId, guest.name?.trim(), guest.category, position]
+        );
+      }
+      await client.query('delete from guests where family_id = $1 and not (id = any($2::text[]))', [familyId, keptIds]);
+      await client.query('commit');
+    } catch (error) {
+      await client.query('rollback');
+      throw error;
+    } finally {
+      client.release();
+    }
+
+    const saved = (await readFamilies()).find((family) => family.id === familyId);
+    return reply.code(201).send(saved);
+  });
+
+  app.post('/api/admin/families/:id/regenerate-link', async (request, reply) => {
+    if (!requireAdmin(request.headers.authorization, reply)) {
+      return;
+    }
+
+    const { id } = request.params as { id: string };
+    const result = await database.query('update families set code = $1 where id = $2', [generateFamilyCode(), id]);
+    if (!result.rowCount) {
+      return reply.code(404).send({ error: 'Família não encontrada.' });
+    }
+    return (await readFamilies()).find((family) => family.id === id);
+  });
+
+  app.delete('/api/admin/families/:id', async (request, reply) => {
+    if (!requireAdmin(request.headers.authorization, reply)) {
+      return;
+    }
+
+    const { id } = request.params as { id: string };
+    await database.query('delete from families where id = $1', [id]);
     return reply.code(204).send();
   });
 

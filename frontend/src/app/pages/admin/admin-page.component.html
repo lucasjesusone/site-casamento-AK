@@ -1,6 +1,6 @@
 <main class="admin-shell">
   <header class="admin-header">
-    <a class="wordmark" [routerLink]="['/']">AK <span>&</span> LG</a>
+    <a class="wordmark" [routerLink]="['/']">A <span>&</span> L</a>
     @if (isAuthenticated) {
       <button type="button" class="text-button" (click)="logout()">Sair</button>
     } @else {
@@ -35,11 +35,19 @@
     <section class="dashboard-heading">
       <div>
         <p class="eyebrow">Administração</p>
-        <h1>Lista de presentes</h1>
+        <h1>{{ tab === 'gifts' ? 'Lista de presentes' : 'Convidados' }}</h1>
       </div>
       <a class="site-link" [routerLink]="['/']">Ver site <span aria-hidden="true">↗</span></a>
     </section>
 
+    <nav class="admin-tabs" aria-label="Seções da administração">
+      <button type="button" [class.active]="tab === 'gifts'" (click)="tab = 'gifts'">Presentes</button>
+      <button type="button" [class.active]="tab === 'guests'" (click)="tab = 'guests'">Convidados</button>
+    </nav>
+
+    @if (tab === 'guests') {
+      <app-admin-guests (unauthorized)="isAuthenticated = false" />
+    } @else {
     @if (error) { <p class="notice error-message" role="alert">{{ error }}</p> }
     @if (message) { <p class="notice success-message" role="status">{{ message }}</p> }
 
@@ -138,5 +146,6 @@
         }
       </section>
     </div>
+    }
   }
 </main>

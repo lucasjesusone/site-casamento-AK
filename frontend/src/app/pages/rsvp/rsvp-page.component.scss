@@ -52,34 +52,75 @@ h1 {
   font-size: 0.95rem;
 }
 
-.rsvp-form {
+.intro {
+  margin: 0 0 18px;
+  color: var(--text-soft);
+}
+
+.guest-list {
   display: grid;
-  gap: 18px;
+  gap: 12px;
+  margin: 0 0 22px;
+  padding: 0;
+  list-style: none;
+}
 
-  label {
-    display: grid;
-    gap: 10px;
-    color: var(--text-strong);
-    font-weight: 600;
-    font-size: 0.95rem;
+.guest-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border: 1px solid rgba(76, 54, 54, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.guest-info {
+  display: grid;
+  gap: 2px;
+  color: var(--text-strong);
+
+  span {
+    color: var(--text-soft);
+    font-size: 0.82rem;
+  }
+}
+
+.choice-group {
+  display: flex;
+  gap: 8px;
+}
+
+.choice {
+  min-height: 42px;
+  padding: 0 20px;
+  border: 1px solid rgba(76, 54, 54, 0.18);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text-strong);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+
+  &.yes.active {
+    border-color: #2f6f5a;
+    background: #2f6f5a;
+    color: #fff;
   }
 
-  input,
-  select,
-  textarea {
-    width: 100%;
-    border: 1px solid rgba(76, 54, 54, 0.12);
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.84);
-    padding: 12px 14px;
-    color: var(--text-strong);
-    font: inherit;
+  &.no.active {
+    border-color: #9a3f44;
+    background: #9a3f44;
+    color: #fff;
   }
+}
 
-  textarea {
-    resize: vertical;
-    min-height: 120px;
-  }
+.hint {
+  margin: 12px 0 0;
+  color: var(--text-soft);
+  font-size: 0.85rem;
 }
 
 .button {

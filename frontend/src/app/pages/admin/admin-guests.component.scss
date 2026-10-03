@@ -1,0 +1,82 @@
+:host { display: block; }
+
+.notice { margin: 0 0 16px; padding: 12px 14px; border-radius: 6px; font-size: 0.92rem; }
+.error-message { color: #8b2f2f; background: #fbeaea; }
+.success-message { color: #2f6f5a; background: #e8f4ee; }
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+
+  div { display: grid; gap: 4px; padding: 16px; border: 1px solid #d8dfd9; border-radius: 8px; background: #fff; }
+  .wide { grid-column: 1 / -1; }
+  strong { font-size: 1.8rem; line-height: 1; color: #2f4a3f; }
+  span { color: #64716c; font-size: 0.85rem; }
+}
+
+.rule-hint { margin: 10px 0 24px; color: #64716c; font-size: 0.85rem; }
+
+.guests-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.editor-panel, .list-panel { padding: 20px; border: 1px solid #d8dfd9; border-radius: 8px; background: #fff; }
+.eyebrow { margin: 0 0 12px; font-size: 0.72rem; letter-spacing: 0.16rem; text-transform: uppercase; color: #8a6f5f; }
+
+form, label, fieldset { display: grid; gap: 10px; }
+form { gap: 18px; }
+label { font-weight: 600; font-size: 0.9rem; }
+fieldset { margin: 0; padding: 0; border: 0; }
+legend { margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+
+input, select {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid #d8dfd9;
+  border-radius: 4px;
+  font: inherit;
+}
+
+.draft-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px; }
+.icon-button { width: 38px; border: 1px solid #d8dfd9; border-radius: 4px; background: #fff; cursor: pointer; font-size: 1.2rem; }
+.text-button { justify-self: start; border: 0; background: none; color: #2f4a3f; font: inherit; font-weight: 600; cursor: pointer; text-decoration: underline; }
+.text-button:disabled { opacity: 0.5; cursor: default; }
+
+.form-actions { display: flex; align-items: center; gap: 16px; }
+.primary-button { padding: 12px 20px; border: 0; border-radius: 4px; background: #2f4a3f; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+.primary-button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.list-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.filters button { padding: 7px 14px; border: 1px solid #d8dfd9; border-radius: 999px; background: #fff; font: inherit; font-size: 0.85rem; cursor: pointer; }
+.filters button.active { border-color: #2f4a3f; background: #2f4a3f; color: #fff; }
+
+.empty { padding: 24px 0; text-align: center; color: #64716c; }
+
+.family-card { padding: 14px 0; border-top: 1px solid #e6ebe7; }
+.family-card header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.family-card h3 { margin: 0; font-size: 1.05rem; }
+.row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.row-actions button { padding: 6px 10px; border: 1px solid #d8dfd9; border-radius: 4px; background: #fff; font: inherit; font-size: 0.8rem; cursor: pointer; }
+.row-actions .remove-action { color: #8b2f2f; }
+.family-card ul { margin: 10px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.family-card li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 12px; align-items: center; font-size: 0.9rem; }
+.guest-category { color: #64716c; font-size: 0.8rem; }
+
+.status-chip { padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; background: #eef0ee; color: #5a6560; }
+.status-chip.confirmed { background: #e0f1e8; color: #1f6b4a; }
+.status-chip.declined { background: #fbeaea; color: #8b2f2f; }
+
+@media (max-width: 860px) {
+  .guests-grid { grid-template-columns: 1fr; }
+  .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .draft-row { grid-template-columns: 1fr auto; }
+  .draft-row select { grid-column: 1; grid-row: 2; }
+  .family-card li { grid-template-columns: 1fr auto; }
+  .guest-category { grid-column: 1; }
+}

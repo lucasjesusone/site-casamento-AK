@@ -7,7 +7,7 @@
       <a href="#galeria">Galeria</a>
       <a href="#local">Local</a>
       <a href="#presentes">Presentes</a>
-      <a [routerLink]="['/rsvp', 'familia-demo']">Confirmar presença</a>
+      <a href="#rsvp">Confirmar presença</a>
     </nav>
   </header>
 
@@ -20,7 +20,7 @@
       <p class="description">{{ subtitle }}</p>
 
       <div class="hero-actions">
-        <a class="button button-primary" href="#confirmar">Confirmar presença</a>
+        <a class="button button-primary" href="#rsvp">Confirmar presença</a>
         <a class="button button-secondary" href="#dia">Ver programação</a>
       </div>
 
@@ -319,10 +319,6 @@
 
     <div class="rsvp-card">
       <p class="rsvp-copy">{{ rsvp.description }}</p>
-
-      <div class="rsvp-cta-wrap">
-        <a class="button button-primary" [routerLink]="['/rsvp', 'familia-demo']">Ir para o convite</a>
-      </div>
     </div>
   </section>
 </main>

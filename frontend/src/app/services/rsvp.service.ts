@@ -1,121 +1,43 @@
 import { Injectable } from '@angular/core';
-import { weddingInvites, type WeddingInvite } from '../data/invites';
+import { type Guest } from '../data/guest';
+import { apiUrl } from './api-url';
 
-export interface RsvpSubmission {
-  name: string;
-  email: string;
-  attending: 'sim' | 'nao';
-  guests: number;
-  message?: string;
+export interface RsvpInvite {
+  familyName: string;
+  guests: Guest[];
 }
 
-interface StoredSubmission {
-  token: string;
-  name: string;
-  email: string;
-  attending: 'sim' | 'nao';
-  guests: number;
-  message: string;
-  createdAt: string;
+export class RsvpError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+  }
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class RsvpService {
-  private readonly storageKey = 'sitecasamento-rsvp-submissions';
-
-  getInvite(token: string): WeddingInvite | undefined {
-    return weddingInvites.find((invite) => invite.token === token);
+  getInvite(code: string): Promise<RsvpInvite> {
+    return this.send(`/api/rsvp/${encodeURIComponent(code)}`);
   }
 
-  getRemainingSlots(token: string): number {
-    const invite = this.getInvite(token);
-    if (!invite) {
-      return 0;
-    }
-
-    const usedSlots = invite.confirmedGuests + this.getStoredGuestCount(token);
-    return Math.max(invite.maxGuests - usedSlots, 0);
+  submit(code: string, responses: Array<{ guestId: string; status: 'confirmed' | 'declined' }>): Promise<RsvpInvite> {
+    return this.send(`/api/rsvp/${encodeURIComponent(code)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ responses })
+    });
   }
 
-  validateInvitation(token: string): boolean {
-    return !!this.getInvite(token);
-  }
-
-  submitResponse(token: string, payload: RsvpSubmission): { success: boolean; message: string; remainingSlots: number } {
-    const invite = this.getInvite(token);
-    if (!invite) {
-      return {
-        success: false,
-        message: 'Esse link de convite não é válido.',
-        remainingSlots: 0
-      };
-    }
-
-    const stored = this.getStoredSubmissions(token);
-    const usedSlots = invite.confirmedGuests + stored.reduce((sum, item) => sum + (item.attending === 'sim' ? item.guests : 0), 0);
-    const remaining = Math.max(invite.maxGuests - usedSlots, 0);
-
-    if (payload.attending === 'sim' && payload.guests > remaining) {
-      return {
-        success: false,
-        message: `Esse convite ainda tem ${remaining} vaga(s) disponível(is) para sua família.`,
-        remainingSlots: remaining
-      };
-    }
-
-    const record: StoredSubmission = {
-      token,
-      name: payload.name.trim(),
-      email: payload.email.trim(),
-      attending: payload.attending,
-      guests: payload.attending === 'sim' ? Math.max(payload.guests, 0) : 0,
-      message: payload.message?.trim() ?? '',
-      createdAt: new Date().toISOString()
-    };
-
-    const nextEntries = [...stored, record];
-    this.persist(nextEntries);
-
-    const finalRemaining = this.getRemainingSlots(token);
-    return {
-      success: true,
-      message:
-        payload.attending === 'sim'
-          ? 'Sua confirmação foi registrada com sucesso. Estamos muito felizes em celebrar com vocês!'
-          : 'Sua resposta foi registrada. Agradecemos muito pelo carinho e pela atenção.',
-      remainingSlots: finalRemaining
-    };
-  }
-
-  private getStoredSubmissions(token: string): StoredSubmission[] {
-    if (typeof window === 'undefined') {
-      return [];
-    }
-
+  private async send(path: string, init?: RequestInit): Promise<RsvpInvite> {
+    let response: Response;
     try {
-      const raw = window.localStorage.getItem(this.storageKey);
-      if (!raw) {
-        return [];
-      }
-
-      const parsed = JSON.parse(raw) as StoredSubmission[];
-      return parsed.filter((entry) => entry.token === token);
+      response = await fetch(apiUrl(path), init);
     } catch {
-      return [];
+      throw new RsvpError('Não foi possível conectar. Tente novamente em instantes.', 0);
     }
-  }
-
-  private getStoredGuestCount(token: string): number {
-    return this.getStoredSubmissions(token).reduce((sum, item) => sum + (item.attending === 'sim' ? item.guests : 0), 0);
-  }
-
-  private persist(entries: StoredSubmission[]): void {
-    if (typeof window === 'undefined') {
-      return;
+    const result = (await response.json().catch(() => ({}))) as RsvpInvite & { error?: string };
+    if (!response.ok) {
+      throw new RsvpError(result.error || 'Não foi possível concluir a operação.', response.status);
     }
-
-    window.localStorage.setItem(this.storageKey, JSON.stringify(entries));
+    return result;
   }
 }

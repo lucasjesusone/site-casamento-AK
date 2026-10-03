@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { type CloudinaryImage, type Gift } from '../../data/gift';
 import { GiftService } from '../../services/gift.service';
+import { AdminGuestsComponent } from './admin-guests.component';
 
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, AdminGuestsComponent],
   templateUrl: './admin-page.component.html',
   styleUrls: ['./admin-page.component.scss']
 })
@@ -16,6 +17,7 @@ export class AdminPageComponent implements OnInit {
   private readonly giftService = inject(GiftService);
 
   isAuthenticated = false;
+  tab: 'gifts' | 'guests' = 'gifts';
   isLoading = false;
   isSaving = false;
   loginPassword = '';

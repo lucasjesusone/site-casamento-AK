@@ -106,7 +106,7 @@ export class GiftService {
     return result.secure_url;
   }
 
-  private async request<T>(url: string, init: RequestInit = {}): Promise<T> {
+  async request<T>(url: string, init: RequestInit = {}): Promise<T> {
     const token = this.getToken();
     const response = await fetch(url, {
       ...init,

@@ -48,6 +48,11 @@ jobs:
           API_BASE_URL: ${{ vars.API_BASE_URL }}
         run: npm run build -- --base-href=/site-casamento-AK/
 
+      - name: Create SPA fallback page
+        working-directory: ./frontend/dist/frontend/browser
+        run: |
+          node -e "const fs=require('fs');let h=fs.readFileSync('index.html','utf8');h=h.replace(/<app-root[\s\S]*<\/app-root>/,'<app-root></app-root>').replace(/ ng-server-context=\"[^\"]*\"/,'');fs.writeFileSync('404.html',h)"
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

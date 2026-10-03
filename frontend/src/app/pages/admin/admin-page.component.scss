@@ -240,3 +240,7 @@ textarea:focus {
   .gift-row > img { width: 64px; }
   .row-actions { grid-column: 2; flex-direction: row; gap: 16px; }
 }
+
+.admin-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+.admin-tabs button { padding: 10px 20px; border: 1px solid #d8dfd9; border-radius: 999px; background: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+.admin-tabs button.active { border-color: #2f4a3f; background: #2f4a3f; color: #fff; }

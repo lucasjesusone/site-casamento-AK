@@ -27,3 +27,22 @@ create table if not exists order_items (
   unit_amount numeric(12, 2) not null check (unit_amount > 0),
   primary key (order_id, gift_id)
 );
+
+create table if not exists families (
+  id text primary key,
+  name text not null,
+  code text not null unique,
+  created_at text not null
+);
+
+create table if not exists guests (
+  id text primary key,
+  family_id text not null references families(id) on delete cascade,
+  name text not null,
+  category text not null default 'adult' check (category in ('adult', 'child_half', 'child_free')),
+  status text not null default 'pending' check (status in ('pending', 'confirmed', 'declined')),
+  responded_at text,
+  position integer not null default 0
+);
+
+create index if not exists guests_family_id_idx on guests(family_id);

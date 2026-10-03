@@ -51,8 +51,6 @@ export class HomePageComponent implements OnInit, OnDestroy {
   paymentReturnTotal = 0;
   private readonly cartStorageKey = 'sitecasamento-gift-cart';
 
-  readonly rsvpInviteUrl = '/rsvp/familia-demo';
-
   ngOnInit(): void {
     this.startGalleryAutoplay();
 

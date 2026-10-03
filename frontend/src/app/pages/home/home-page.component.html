@@ -109,6 +109,9 @@
         aria-live="polite"
       >
         <img [src]="getImageUrl(activeGalleryItem.imageUrl)"         alt="" />
+        <div class="gallery-caption">
+          <span class="gallery-count">{{ galleryIndex + 1 }} / {{ gallery.length }}</span>
+        </div>
         @if (gallery.length > 1) {
           <button
             type="button"

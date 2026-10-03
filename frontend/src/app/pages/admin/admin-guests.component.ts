@@ -1,3 +1,4 @@
+import { MonogramLoaderComponent } from '../../components/monogram-loader.component';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -23,7 +24,7 @@ interface GuestDraft {
 @Component({
   selector: 'app-admin-guests',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [MonogramLoaderComponent, CommonModule, FormsModule],
   templateUrl: './admin-guests.component.html',
   styleUrls: ['./admin-guests.component.scss']
 })

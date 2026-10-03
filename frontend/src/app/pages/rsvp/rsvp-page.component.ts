@@ -1,3 +1,4 @@
+import { MonogramLoaderComponent } from '../../components/monogram-loader.component';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -9,7 +10,7 @@ type Choice = 'confirmed' | 'declined' | 'pending';
 @Component({
   selector: 'app-rsvp-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [MonogramLoaderComponent, CommonModule, RouterLink],
   templateUrl: './rsvp-page.component.html',
   styleUrls: ['./rsvp-page.component.scss']
 })

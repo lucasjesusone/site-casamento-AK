@@ -183,7 +183,7 @@
     }
 
     @if (giftsLoading) {
-      <p class="gift-status">Carregando os presentes...</p>
+      <app-monogram-loader label="Carregando os presentes..." />
     } @else if (gifts.length) {
       <div class="gift-carousel">
         @if (giftsPageCount > 1) {

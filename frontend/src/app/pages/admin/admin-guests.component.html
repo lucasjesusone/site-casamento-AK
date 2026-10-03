@@ -77,7 +77,7 @@
     </div>
 
     @if (isLoading) {
-      <p class="empty loading-state"><span class="spinner" aria-hidden="true"></span> Carregando convidados...</p>
+      <app-monogram-loader label="Carregando convidados..." />
     } @else if (!visibleFamilies.length) {
       <p class="empty">{{ families.length ? 'Nenhum convidado neste filtro.' : 'Nenhuma família cadastrada ainda.' }}</p>
     } @else {

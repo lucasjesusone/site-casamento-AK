@@ -1,9 +1,6 @@
 <main class="rsvp-shell">
   @if (isLoading) {
-    <section class="rsvp-card invalid">
-      <p class="eyebrow">Convite</p>
-      <p>Carregando seu convite...</p>
-    </section>
+    <app-monogram-loader label="Carregando seu convite..." />
   } @else if (isNotFound) {
     <section class="rsvp-card invalid">
       <p class="eyebrow">Convite inválido</p>

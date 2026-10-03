@@ -1,3 +1,4 @@
+import { MonogramLoaderComponent } from '../../components/monogram-loader.component';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, ElementRef, inject, OnDestroy, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -14,7 +15,7 @@ interface GiftCartItem {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [MonogramLoaderComponent, CommonModule, RouterLink],
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.scss']
 })

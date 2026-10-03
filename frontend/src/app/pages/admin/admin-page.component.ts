@@ -1,3 +1,4 @@
+import { MonogramLoaderComponent } from '../../components/monogram-loader.component';
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +10,7 @@ import { AdminGuestsComponent } from './admin-guests.component';
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, AdminGuestsComponent],
+  imports: [MonogramLoaderComponent, CommonModule, FormsModule, RouterLink, AdminGuestsComponent],
   templateUrl: './admin-page.component.html',
   styleUrls: ['./admin-page.component.scss']
 })

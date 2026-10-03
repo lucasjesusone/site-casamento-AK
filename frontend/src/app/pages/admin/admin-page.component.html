@@ -120,7 +120,7 @@
         </div>
 
         @if (isLoading) {
-          <p class="empty-state">Carregando catálogo...</p>
+          <app-monogram-loader label="Carregando catálogo..." />
         } @else if (!gifts.length) {
           <div class="empty-state">
             <span class="empty-mark" aria-hidden="true">＋</span>

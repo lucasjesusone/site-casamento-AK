@@ -34,6 +34,7 @@ export class AdminGuestsComponent implements OnInit {
 
   readonly categoryLabels = guestCategoryLabels;
   readonly categories = Object.keys(guestCategoryLabels) as GuestCategory[];
+  readonly inviteLimit = 150;
   families: Family[] = [];
   filter: Filter = 'all';
   isLoading = false;
@@ -66,6 +67,21 @@ export class AdminGuestsComponent implements OnInit {
       payingConfirmed: weight(confirmed),
       payingTotal: weight(guests.filter((guest) => guest.status !== 'declined'))
     };
+  }
+
+  get breakdown() {
+    const guests = this.allGuests;
+    return this.categories.map((category) => {
+      const list = guests.filter((guest) => guest.category === category);
+      const count = (status: GuestStatus) => list.filter((guest) => guest.status === status).length;
+      return {
+        label: this.categoryLabels[category],
+        confirmed: count('confirmed'),
+        pending: count('pending'),
+        declined: count('declined'),
+        total: list.length
+      };
+    });
   }
 
   get visibleFamilies(): Array<{ family: Family; guests: Guest[] }> {

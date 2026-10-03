@@ -2,15 +2,33 @@
 @if (message) { <p class="notice success-message" role="status">{{ message }}</p> }
 
 <section class="summary" aria-label="Resumo dos convidados">
-  <div><strong>{{ totals.confirmed }}</strong><span>Confirmados</span></div>
-  <div><strong>{{ totals.pending }}</strong><span>Pendentes</span></div>
-  <div><strong>{{ totals.declined }}</strong><span>Não vão</span></div>
-  <div><strong>{{ totals.guests }}</strong><span>Convidados em {{ totals.families }} famílias</span></div>
-  <div class="wide">
-    <strong>{{ totals.payingConfirmed | number:'1.0-1':'pt-BR' }}</strong>
-    <span>Convites pagantes confirmados (de {{ totals.payingTotal | number:'1.0-1':'pt-BR' }} previstos)</span>
-  </div>
+  <div><strong>{{ totals.payingConfirmed | number:'1.0-1':'pt-BR' }}</strong><span>Convites pagantes confirmados (de {{ inviteLimit }})</span></div>
+  <div><strong>{{ totals.payingTotal | number:'1.0-1':'pt-BR' }}</strong><span>Previstos (confirmados + pendentes)</span></div>
+  <div><strong>{{ inviteLimit - totals.payingTotal | number:'1.0-1':'pt-BR' }}</strong><span>Convites ainda livres</span></div>
+  <div><strong>{{ totals.guests }}</strong><span>Pessoas em {{ totals.families }} famílias</span></div>
 </section>
+
+<div class="breakdown-wrap">
+  <table class="breakdown">
+    <thead>
+      <tr><th></th><th>Confirmados</th><th>Pendentes</th><th>Não vão</th><th>Total</th></tr>
+    </thead>
+    <tbody>
+      @for (row of breakdown; track row.label) {
+        <tr>
+          <th scope="row">{{ row.label }}</th>
+          <td>{{ row.confirmed }}</td><td>{{ row.pending }}</td><td>{{ row.declined }}</td><td>{{ row.total }}</td>
+        </tr>
+      }
+    </tbody>
+    <tfoot>
+      <tr>
+        <th scope="row">Total</th>
+        <td>{{ totals.confirmed }}</td><td>{{ totals.pending }}</td><td>{{ totals.declined }}</td><td>{{ totals.guests }}</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
 <p class="rule-hint">Adulto = 1 convite, criança de 7 a 12 anos = 0,5, criança até 6 anos = isenta.</p>
 
 <div class="guests-grid">

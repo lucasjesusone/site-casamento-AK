@@ -80,3 +80,10 @@ input, select {
   .family-card li { grid-template-columns: 1fr auto; }
   .guest-category { grid-column: 1; }
 }
+
+.breakdown-wrap { overflow-x: auto; margin-bottom: 12px; }
+.breakdown { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e3e8e4; font-size: .92rem; }
+.breakdown th, .breakdown td { padding: 10px 14px; text-align: center; border-bottom: 1px solid #edf0ee; }
+.breakdown th:first-child { text-align: left; font-weight: 600; }
+.breakdown thead th { font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; color: #5d6b64; }
+.breakdown tfoot th, .breakdown tfoot td { font-weight: 700; border-bottom: 0; background: #f6f8f6; }

@@ -709,6 +709,8 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   flex: 0 0 100%;
   gap: 18px;
+  align-content: start;
+  align-self: start;
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }

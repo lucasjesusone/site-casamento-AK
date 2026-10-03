@@ -87,3 +87,7 @@ input, select {
 .breakdown th:first-child { text-align: left; font-weight: 600; }
 .breakdown thead th { font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; color: #5d6b64; }
 .breakdown tfoot th, .breakdown tfoot td { font-weight: 700; border-bottom: 0; background: #f6f8f6; }
+
+.loading-state { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 32px 0; }
+.spinner { width: 18px; height: 18px; border: 2px solid #cad5ce; border-top-color: #385c52; border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

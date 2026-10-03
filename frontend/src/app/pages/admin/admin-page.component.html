@@ -84,8 +84,8 @@
             @if (form.imageUrl) {
               <img class="selected-image" [src]="form.imageUrl" alt="Prévia da foto selecionada" />
             }
-            <label class="upload-button">
-              Enviar uma foto
+            <label class="upload-button" [class.uploading]="isUploading">
+              @if (isUploading) { <span class="spinner" aria-hidden="true"></span> Enviando foto... } @else { Enviar uma foto }
               <input type="file" accept="image/*" (change)="chooseUpload($event)" [disabled]="isSaving" />
             </label>
             <label>

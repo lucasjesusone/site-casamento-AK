@@ -18,6 +18,7 @@ export class AdminPageComponent implements OnInit {
 
   isAuthenticated = false;
   tab: 'gifts' | 'guests' = 'gifts';
+  isUploading = false;
   isLoading = false;
   isSaving = false;
   loginPassword = '';
@@ -114,7 +115,9 @@ export class AdminPageComponent implements OnInit {
       return;
     }
     this.error = '';
+    this.message = '';
     this.isSaving = true;
+    this.isUploading = true;
     try {
       this.form.imageUrl = await this.giftService.uploadImage(file);
       this.message = 'Foto enviada para a pasta Gifts.';
@@ -123,6 +126,7 @@ export class AdminPageComponent implements OnInit {
       this.error = this.errorMessage(error);
     } finally {
       this.isSaving = false;
+      this.isUploading = false;
       input.value = '';
     }
   }

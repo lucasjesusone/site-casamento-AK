@@ -244,3 +244,7 @@ textarea:focus {
 .admin-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
 .admin-tabs button { padding: 10px 20px; border: 1px solid #d8dfd9; border-radius: 999px; background: #fff; font: inherit; font-weight: 600; cursor: pointer; }
 .admin-tabs button.active { border-color: #2f4a3f; background: #2f4a3f; color: #fff; }
+
+.upload-button.uploading { gap: 8px; opacity: .8; cursor: progress; }
+.spinner { width: 14px; height: 14px; border: 2px solid #cad5ce; border-top-color: #385c52; border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

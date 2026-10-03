@@ -334,9 +334,20 @@
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    object-position: center;
     animation: gallery-reveal 0.35s ease both;
+  }
+
+  .gallery-backdrop {
+    position: absolute;
+    inset: 0;
+    object-fit: cover;
+    filter: blur(28px) brightness(0.9);
+    transform: scale(1.15);
+  }
+
+  .gallery-photo {
+    position: relative;
+    object-fit: contain;
   }
 }
 

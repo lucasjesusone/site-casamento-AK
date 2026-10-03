@@ -108,7 +108,8 @@
         [attr.aria-label]="'Foto ' + (galleryIndex + 1) + ' de ' + gallery.length"
         aria-live="polite"
       >
-        <img [src]="getImageUrl(activeGalleryItem.imageUrl)"         alt="" />
+        <img class="gallery-backdrop" [src]="getImageUrl(activeGalleryItem.imageUrl)" alt="" aria-hidden="true" />
+        <img class="gallery-photo" [src]="getImageUrl(activeGalleryItem.imageUrl)" alt="Foto do casal" />
         <div class="gallery-caption">
           <span class="gallery-count">{{ galleryIndex + 1 }} / {{ gallery.length }}</span>
         </div>

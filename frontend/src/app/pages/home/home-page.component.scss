@@ -698,6 +698,7 @@
 }
 
 .gift-grid {
+  grid-column: 2;
   display: flex;
   min-width: 0;
   overflow-x: auto;

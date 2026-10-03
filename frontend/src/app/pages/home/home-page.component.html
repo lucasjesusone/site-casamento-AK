@@ -89,16 +89,47 @@
       <h2>Momentos que fazem parte da nossa história</h2>
     </div>
 
-    <div class="gallery-grid">
-      @for (item of gallery; track item.title) {
-        <div class="gallery-card" [class]="item.accent">
-          <div
-            class="placeholder"
-            [style.background-image]="'url(' + getImageUrl(item.imageUrl) + ')'"
-          ></div>
-          <span>{{ item.title }}</span>
+    <div
+      class="gallery-carousel"
+      role="region"
+      aria-roledescription="carrossel"
+      aria-label="Fotos do casal"
+      (mouseenter)="pauseGallery()"
+      (mouseleave)="resumeGallery()"
+      (focusin)="pauseGallery()"
+      (focusout)="onGalleryFocusOut($event)"
+    >
+      <div
+        class="gallery-viewport"
+        role="group"
+        aria-roledescription="slide"
+        [attr.aria-label]="'Foto ' + (galleryIndex + 1) + ' de ' + gallery.length"
+        aria-live="polite"
+      >
+        <img [src]="getImageUrl(activeGalleryItem.imageUrl)" [alt]="activeGalleryItem.title" />
+        <div class="gallery-caption">
+          <span>{{ activeGalleryItem.title }}</span>
+          <span class="gallery-count">{{ galleryIndex + 1 }} / {{ gallery.length }}</span>
         </div>
-      }
+        @if (gallery.length > 1) {
+          <button
+            type="button"
+            class="gallery-arrow gallery-arrow-previous"
+            (click)="showPreviousPhoto()"
+            aria-label="Foto anterior"
+          >
+            <span class="gallery-chevron gallery-chevron-previous" aria-hidden="true"></span>
+          </button>
+          <button
+            type="button"
+            class="gallery-arrow gallery-arrow-next"
+            (click)="showNextPhoto()"
+            aria-label="Próxima foto"
+          >
+            <span class="gallery-chevron gallery-chevron-next" aria-hidden="true"></span>
+          </button>
+        }
+      </div>
     </div>
   </section>
 
@@ -127,14 +158,155 @@
   </section>
 
   <section id="presentes" class="gift">
-    <div class="gift-box">
-      <p class="eyebrow">Presentes</p>
-      <h2>Seu carinho é o melhor presente</h2>
-      <p>
-        Se você quiser nos presentear, sua presença e alegria já significam muito. Se preferir,
-        também teremos uma lista de presentes para ajudar a construir nosso lar.
-      </p>
+    <div class="gift-heading-row">
+      <div class="section-heading">
+        <p class="eyebrow">Presentes</p>
+        <h2>Um gesto que fica na memória</h2>
+        <p class="gift-intro">Escolha uma lembrança simbólica para fazer parte do começo da nossa vida a dois.</p>
+      </div>
+      <button type="button" class="cart-trigger" (click)="isCartOpen = true" aria-label="Abrir carrinho">
+        <span class="cart-trigger-icon" aria-hidden="true"></span>
+        <span>Sua sacola</span>
+        <span class="cart-badge">{{ cartItemCount }}</span>
+      </button>
     </div>
+
+    @if (paymentReturnMessage) {
+      <div class="payment-return" [class.success]="paymentReturnStatus === 'success'" [class.failure]="paymentReturnStatus === 'failure'" role="status">
+        <p>{{ paymentReturnMessage }}</p>
+        @if (paymentReturnStatus === 'success') {
+          <strong>{{ paymentReturnTotal | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+        }
+      </div>
+    }
+
+    @if (giftsLoading) {
+      <p class="gift-status">Carregando os presentes...</p>
+    } @else if (gifts.length) {
+      <div class="gift-carousel">
+        @if (giftsPageCount > 1) {
+          <button
+            type="button"
+            class="gift-page-arrow previous"
+            (click)="showPreviousGifts()"
+            [disabled]="giftsPage === 0"
+            aria-label="Ver os quatro presentes anteriores"
+          >
+            <span class="gift-page-chevron previous" aria-hidden="true"></span>
+          </button>
+        }
+        <div
+          #giftPagesViewport
+          class="gift-grid"
+          role="region"
+          aria-roledescription="carrossel"
+          aria-label="Presentes disponíveis"
+          tabindex="0"
+          (scroll)="onGiftPagesScroll($event)"
+        >
+          @for (page of giftPages; track page[0].id; let pageIndex = $index) {
+            <div class="gift-page" [attr.aria-label]="'Página ' + (pageIndex + 1) + ' de ' + giftsPageCount">
+              @for (gift of page; track gift.id) {
+                <article class="public-gift">
+                  <div class="public-gift-image">
+                    <img [src]="gift.imageUrl" [alt]="gift.title" loading="lazy" />
+                    <span class="gift-image-tag">Com carinho</span>
+                  </div>
+                  <div class="public-gift-copy">
+                    <h3>{{ gift.title }}</h3>
+                    @if (gift.description) { <p>{{ gift.description }}</p> }
+                    <div class="public-gift-footer">
+                      <strong>{{ gift.amount | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+                      <button type="button" class="add-gift-button" (click)="addGiftToCart(gift)" [attr.aria-label]="'Adicionar ' + gift.title + ' ao carrinho'">
+                        <span aria-hidden="true">+</span> Adicionar
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              }
+            </div>
+          }
+        </div>
+        @if (giftsPageCount > 1) {
+          <button
+            type="button"
+            class="gift-page-arrow next"
+            (click)="showNextGifts()"
+            [disabled]="giftsPage >= giftsPageCount - 1"
+            aria-label="Ver os próximos quatro presentes"
+          >
+            <span class="gift-page-chevron next" aria-hidden="true"></span>
+          </button>
+        }
+      </div>
+      @if (giftsPageCount > 1) {
+        <div class="gift-pagination" aria-live="polite" aria-label="Página atual de presentes">
+          <span class="gift-page-status" aria-live="polite">{{ giftsPage + 1 }} <span>de</span> {{ giftsPageCount }}</span>
+        </div>
+      }
+      <p class="gift-disclaimer">Os presentes são contribuições simbólicas destinadas ao casal. A etapa de pagamento será habilitada em breve.</p>
+    } @else {
+      <div class="gift-empty" role="status">
+        <span class="gift-empty-mark" aria-hidden="true">♡</span>
+        <div>
+          <h3>A lista está sendo preparada</h3>
+          <p>Em breve, vamos compartilhar presentes simbólicos escolhidos com carinho.</p>
+        </div>
+      </div>
+    }
+
+    @if (isCartOpen) {
+      <div class="cart-layer">
+        <button type="button" class="cart-backdrop" aria-label="Fechar carrinho" (click)="isCartOpen = false"></button>
+        <aside class="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+          <header class="cart-header">
+            <div>
+              <p class="eyebrow">Sua seleção</p>
+              <h3 id="cart-title">Carrinho <span>{{ cartItemCount }}</span></h3>
+            </div>
+            <button type="button" class="cart-close" aria-label="Fechar carrinho" (click)="isCartOpen = false">×</button>
+          </header>
+
+          @if (cartItems.length) {
+            <div class="cart-items">
+              @for (item of cartItems; track item.gift.id) {
+                <article class="cart-item">
+                  <img [src]="item.gift.imageUrl" [alt]="item.gift.title" />
+                  <div class="cart-item-info">
+                    <h4>{{ item.gift.title }}</h4>
+                    <strong>{{ item.gift.amount | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+                    <div class="quantity-control" [attr.aria-label]="'Quantidade de ' + item.gift.title">
+                      <button type="button" (click)="changeGiftQuantity(item.gift.id, -1)" [attr.aria-label]="'Diminuir quantidade de ' + item.gift.title">−</button>
+                      <span>{{ item.quantity }}</span>
+                      <button type="button" (click)="changeGiftQuantity(item.gift.id, 1)" [attr.aria-label]="'Aumentar quantidade de ' + item.gift.title">+</button>
+                    </div>
+                  </div>
+                  <button type="button" class="remove-gift" (click)="removeGiftFromCart(item.gift.id)" [attr.aria-label]="'Remover ' + item.gift.title">Remover</button>
+                </article>
+              }
+            </div>
+            <footer class="cart-summary">
+              <div class="cart-total"><span>Total simbólico</span><strong>{{ cartTotal | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong></div>
+              @if (checkoutError) { <p class="checkout-notice" role="alert">{{ checkoutError }}</p> }
+              <div class="cart-actions">
+                <button type="button" class="continue-shopping-button" (click)="continueShopping()">Adicionar mais itens</button>
+                <button type="button" class="checkout-button" (click)="finalizePurchase()" [disabled]="isCheckoutLoading">
+                  {{ isCheckoutLoading ? 'Abrindo pagamento...' : 'Finalizar compra' }}
+                </button>
+              </div>
+              <p>Pagamento seguro via Mercado Pago. Pix e cartões disponíveis na conta.</p>
+            </footer>
+          } @else {
+            <div class="cart-empty">
+              <span aria-hidden="true">♡</span>
+              <h4>Sua sacola está vazia</h4>
+              <p>Adicione um presente para vê-lo por aqui.</p>
+              <button type="button" class="continue-shopping" (click)="isCartOpen = false">Ver presentes</button>
+            </div>
+          }
+        </aside>
+      </div>
+    }
   </section>
 
   <section id="rsvp" class="rsvp">

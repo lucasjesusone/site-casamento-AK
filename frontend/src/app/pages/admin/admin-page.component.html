@@ -1,0 +1,142 @@
+<main class="admin-shell">
+  <header class="admin-header">
+    <a class="wordmark" [routerLink]="['/']">AK <span>&</span> LG</a>
+    @if (isAuthenticated) {
+      <button type="button" class="text-button" (click)="logout()">Sair</button>
+    } @else {
+      <a class="text-button" [routerLink]="['/']">Voltar ao site</a>
+    }
+  </header>
+
+  @if (!isAuthenticated) {
+    <section class="login-layout">
+      <div class="login-copy">
+        <p class="eyebrow">Área reservada</p>
+        <h1>Presentes,<br /><em>com carinho.</em></h1>
+        <p>Entre para organizar os presentes do nosso grande dia.</p>
+      </div>
+      <form class="login-form" (ngSubmit)="login()">
+        <label for="admin-password">Senha de acesso</label>
+        <input
+          id="admin-password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          [(ngModel)]="loginPassword"
+          required
+        />
+        @if (error) { <p class="form-message error-message">{{ error }}</p> }
+        <button class="primary-button" type="submit" [disabled]="isLoading || !loginPassword">
+          {{ isLoading ? 'Entrando...' : 'Entrar na administração' }}
+        </button>
+      </form>
+    </section>
+  } @else {
+    <section class="dashboard-heading">
+      <div>
+        <p class="eyebrow">Administração</p>
+        <h1>Lista de presentes</h1>
+      </div>
+      <a class="site-link" [routerLink]="['/']">Ver site <span aria-hidden="true">↗</span></a>
+    </section>
+
+    @if (error) { <p class="notice error-message" role="alert">{{ error }}</p> }
+    @if (message) { <p class="notice success-message" role="status">{{ message }}</p> }
+
+    <div class="dashboard-grid">
+      <section class="editor-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">{{ editingId ? 'Editar item' : 'Novo item' }}</p>
+            <h2>{{ editingId ? 'Atualizar presente' : 'Criar presente' }}</h2>
+          </div>
+          @if (editingId) {
+            <button type="button" class="text-button" (click)="resetForm()">Cancelar edição</button>
+          }
+        </div>
+
+        <form class="gift-form" (ngSubmit)="saveGift()" #giftForm="ngForm">
+          <label>
+            Nome do presente
+            <input name="title" [(ngModel)]="form.title" maxlength="90" required placeholder="Ex.: Jantar a dois" />
+          </label>
+
+          <label>
+            Descrição (opcional)
+            <textarea name="description" [(ngModel)]="form.description" maxlength="320" rows="3" placeholder="Conte o que essa contribuição representa para vocês"></textarea>
+          </label>
+
+          <label>
+            Valor simbólico
+            <span class="amount-field"><span>R$</span><input name="amount" type="number" min="0.01" step="0.01" [(ngModel)]="form.amount" required placeholder="150,00" /></span>
+          </label>
+
+          <fieldset class="image-fieldset">
+            <legend>Foto do presente</legend>
+            @if (form.imageUrl) {
+              <img class="selected-image" [src]="form.imageUrl" alt="Prévia da foto selecionada" />
+            }
+            <label class="upload-button">
+              Enviar uma foto
+              <input type="file" accept="image/*" (change)="chooseUpload($event)" [disabled]="isSaving" />
+            </label>
+            <label>
+              Ou colar URL da imagem
+              <input name="imageUrl" type="url" [(ngModel)]="form.imageUrl" required placeholder="https://..." />
+            </label>
+            @if (images.length) {
+              <div class="image-library" aria-label="Fotos da pasta Gifts">
+                @for (image of images; track image.id) {
+                  <button type="button" class="image-option" [class.selected]="form.imageUrl === image.imageUrl" (click)="selectImage(image)" [attr.aria-label]="'Usar imagem ' + image.id">
+                    <img [src]="image.imageUrl" [alt]="image.id" loading="lazy" />
+                  </button>
+                }
+              </div>
+            } @else {
+              <p class="field-hint">A biblioteca Cloudinary aparecerá aqui quando houver fotos na pasta Gifts.</p>
+            }
+          </fieldset>
+
+          <button class="primary-button" type="submit" [disabled]="isSaving || !giftForm.form.valid">
+            {{ isSaving ? 'Salvando...' : (editingId ? 'Salvar alterações' : 'Adicionar presente') }}
+          </button>
+        </form>
+      </section>
+
+      <section class="catalog-panel">
+        <div class="panel-heading catalog-heading">
+          <div>
+            <p class="eyebrow">Visível no site</p>
+            <h2>Catálogo <span>{{ gifts.length }}</span></h2>
+          </div>
+        </div>
+
+        @if (isLoading) {
+          <p class="empty-state">Carregando catálogo...</p>
+        } @else if (!gifts.length) {
+          <div class="empty-state">
+            <span class="empty-mark" aria-hidden="true">＋</span>
+            <p>Nenhum presente cadastrado ainda.</p>
+          </div>
+        } @else {
+          <div class="gift-list">
+            @for (gift of gifts; track gift.id) {
+              <article class="gift-row">
+                <img [src]="gift.imageUrl" [alt]="gift.title" loading="lazy" />
+                <div class="gift-info">
+                  <h3>{{ gift.title }}</h3>
+                  @if (gift.description) { <p>{{ gift.description }}</p> }
+                  <strong>{{ gift.amount | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+                </div>
+                <div class="row-actions">
+                  <button type="button" (click)="editGift(gift)" [attr.aria-label]="'Editar ' + gift.title" title="Editar">Editar</button>
+                  <button type="button" class="remove-action" (click)="removeGift(gift)" [attr.aria-label]="'Remover ' + gift.title" title="Remover">Remover</button>
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </section>
+    </div>
+  }
+</main>

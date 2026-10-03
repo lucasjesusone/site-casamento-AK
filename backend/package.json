@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/server.ts"
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc --outDir dist --declaration false --declarationMap false",
+    "postbuild": "node -e \"const fs=require('node:fs');fs.mkdirSync('dist/sql',{recursive:true});fs.copyFileSync('sql/schema.sql','dist/sql/schema.sql')\"",
+    "start": "node dist/src/server.js"
   },
   "keywords": [],
   "author": "",
@@ -14,10 +17,12 @@
   "dependencies": {
     "@fastify/cors": "^11.3.0",
     "dotenv": "^17.4.2",
-    "fastify": "^5.12.3"
+    "fastify": "^5.12.3",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "@types/node": "^22.20.2",
+    "@types/pg": "^8.15.5",
     "tsx": "^4.23.13",
     "typescript": "^7.0.2"
   }

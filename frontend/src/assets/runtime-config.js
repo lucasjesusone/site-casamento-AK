@@ -1,0 +1,1 @@
+window.__SITE_CONFIG__ = { apiBaseUrl: '' };

@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: sitecasamento-api
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_SESSION_SECRET
+        sync: false
+      - key: CORS_ORIGINS
+        value: https://lucasjesusone.github.io
+      - key: FRONTEND_PUBLIC_URL
+        value: https://lucasjesusone.github.io/site-casamento-AK
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_GALLERY_FOLDER
+        value: wedding
+      - key: CLOUDINARY_GIFTS_FOLDER
+        value: Gifts
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false

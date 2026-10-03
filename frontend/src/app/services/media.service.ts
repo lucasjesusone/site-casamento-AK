@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { apiUrl } from './api-url';
 
 export interface MediaImage {
   title: string;
@@ -33,6 +34,20 @@ export class MediaService {
 
   getGallery(): MediaImage[] {
     return this.defaultGallery;
+  }
+
+  async loadGallery(): Promise<MediaImage[]> {
+    try {
+      const response = await fetch(apiUrl('/api/gallery'));
+      if (!response.ok) {
+        return this.defaultGallery;
+      }
+
+      const gallery = (await response.json()) as MediaImage[];
+      return gallery.length ? gallery : this.defaultGallery;
+    } catch {
+      return this.defaultGallery;
+    }
   }
 
   getImageUrl(url?: string): string {

@@ -18,6 +18,14 @@ services:
         value: https://lucasjesusone.github.io
       - key: FRONTEND_PUBLIC_URL
         value: https://lucasjesusone.github.io/site-casamento-AK
+      - key: MERCADOPAGO_ACCESS_TOKEN
+        sync: false
+      - key: MERCADOPAGO_WEBHOOK_SECRET
+        sync: false
+      - key: MERCADOPAGO_WEBHOOK_URL
+        value: https://sitecasamento-api.onrender.com/api/payments/mercadopago/webhook
+      - key: MERCADOPAGO_SANDBOX
+        value: "true"
       - key: CLOUDINARY_CLOUD_NAME
         sync: false
       - key: CLOUDINARY_GALLERY_FOLDER

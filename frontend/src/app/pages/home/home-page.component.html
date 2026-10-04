@@ -2,7 +2,6 @@
   <header class="topbar">
     <div class="brand">{{ shortName }}</div>
     <nav class="nav">
-      <a href="#historia">Nossa história</a>
       <a href="#dia">O dia</a>
       <a href="#galeria">Galeria</a>
       <a href="#local">Local</a>
@@ -30,23 +29,6 @@
           <img src="assets/casal.jpg" alt="Ana Karinne e Lucas Gabriel" />
         </div>
       </div>
-    </div>
-  </section>
-
-  <section id="historia" class="story">
-    <div class="section-heading">
-      <p class="eyebrow">Nossa história</p>
-      <h2>Um amor que cresce com carinho</h2>
-    </div>
-
-    <div class="story-grid">
-      @for (item of story; track item.title; let i = $index) {
-        <article class="story-card">
-          <span class="card-number">0{{ i + 1 }}</span>
-          <h3>{{ item.title }}</h3>
-          <p>{{ item.text }}</p>
-        </article>
-      }
     </div>
   </section>
 

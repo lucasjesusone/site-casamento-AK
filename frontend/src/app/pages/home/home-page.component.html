@@ -17,18 +17,11 @@
       <h1>{{ title }}</h1>
       <p class="date">{{ weddingDate }}</p>
       <p class="subtitle">{{ headline }}</p>
-      <p class="description">{{ subtitle }}</p>
 
       <div class="hero-actions">
         <a class="button button-primary" href="#rsvp">Confirmar presença</a>
-        <a class="button button-secondary" href="#dia">Ver programação</a>
       </div>
 
-      <ul class="highlights">
-        @for (item of highlights; track item) {
-          <li>{{ item }}</li>
-        }
-      </ul>
     </div>
 
     <div class="hero-visual" aria-label="Imagem decorativa do casal">
@@ -38,14 +31,6 @@
         </div>
       </div>
     </div>
-  </section>
-
-  <section class="countdown">
-    <div>
-      <span class="label">Data especial</span>
-      <h2>{{ weddingDate }}</h2>
-    </div>
-    <p>Nosso grande dia está chegando e queremos compartilhar esse momento com vocês.</p>
   </section>
 
   <section id="historia" class="story">
@@ -211,7 +196,7 @@
               @for (gift of page; track gift.id) {
                 <article class="public-gift">
                   <div class="public-gift-image">
-                    <img [src]="gift.imageUrl" [alt]="gift.title" loading="lazy" />
+                    <img [src]="gift.imageUrl" [alt]="gift.title" loading="lazy" />
                   </div>
                   <div class="public-gift-copy">
                     <h3>{{ gift.title }}</h3>
@@ -318,6 +303,7 @@
 
     <div class="rsvp-card">
       <p class="rsvp-copy">{{ rsvp.description }}</p>
+      <app-rsvp-form />
     </div>
   </section>
 </main>

@@ -99,7 +99,7 @@ export class AdminGuestsComponent implements OnInit {
   }
 
   inviteLink(family: Family): string {
-    return new URL(`rsvp/${family.code}`, document.baseURI).href;
+    return new URL(`?c=${encodeURIComponent(family.code)}`, document.baseURI).href;
   }
 
   async copyLink(family: Family): Promise<void> {

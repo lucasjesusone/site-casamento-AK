@@ -2,6 +2,7 @@ import { MonogramLoaderComponent } from '../../components/monogram-loader.compon
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, ElementRef, inject, OnDestroy, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { RsvpFormComponent } from '../rsvp/rsvp-page.component';
 import { weddingData } from '../../data/wedding-data';
 import { type Gift } from '../../data/gift';
 import { GiftService } from '../../services/gift.service';
@@ -15,7 +16,7 @@ interface GiftCartItem {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [MonogramLoaderComponent, CommonModule, RouterLink],
+  imports: [RsvpFormComponent, MonogramLoaderComponent, CommonModule, RouterLink],
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.scss']
 })

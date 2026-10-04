@@ -1,24 +1,24 @@
 import { MonogramLoaderComponent } from '../../components/monogram-loader.component';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { guestCategoryLabels, type Guest } from '../../data/guest';
 import { RsvpError, RsvpService } from '../../services/rsvp.service';
 
 type Choice = 'confirmed' | 'declined' | 'pending';
 
 @Component({
-  selector: 'app-rsvp-page',
+  selector: 'app-rsvp-form',
   standalone: true,
-  imports: [MonogramLoaderComponent, CommonModule, RouterLink],
+  imports: [MonogramLoaderComponent, CommonModule],
   templateUrl: './rsvp-page.component.html',
   styleUrls: ['./rsvp-page.component.scss']
 })
-export class RsvpPageComponent implements OnInit {
+export class RsvpFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly rsvpService = inject(RsvpService);
   private readonly platformId = inject(PLATFORM_ID);
-  private code = '';
+  code = '';
 
   readonly categoryLabels = guestCategoryLabels;
   familyName = '';
@@ -35,8 +35,10 @@ export class RsvpPageComponent implements OnInit {
       return;
     }
 
-    this.code = this.route.snapshot.paramMap.get('token') ?? '';
-    void this.load();
+    this.code = (this.route.snapshot.queryParamMap.get('c') ?? '').trim();
+    if (this.code) {
+      void this.load();
+    }
   }
 
   get canSubmit(): boolean {
@@ -78,6 +80,7 @@ export class RsvpPageComponent implements OnInit {
       }
     } finally {
       this.isLoading = false;
+      setTimeout(() => document.getElementById('rsvp')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
     }
   }
 

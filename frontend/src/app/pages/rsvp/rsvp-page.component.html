@@ -1,52 +1,37 @@
-<main class="rsvp-shell">
-  @if (isLoading) {
-    <app-monogram-loader label="Carregando seu convite..." />
-  } @else if (isNotFound) {
-    <section class="rsvp-card invalid">
-      <p class="eyebrow">Convite inválido</p>
-      <h1>Link não encontrado</h1>
-      <p>Este convite não existe ou o link foi substituído. Fale com os noivos para receber o link atualizado.</p>
-      <a class="button button-primary" [routerLink]="['/']">Voltar para o início</a>
-    </section>
-  } @else if (errorMessage && !guests.length) {
-    <section class="rsvp-card invalid">
-      <p class="eyebrow">Convite</p>
-      <p class="status error">{{ errorMessage }}</p>
-      <a class="button button-primary" [routerLink]="['/']">Voltar para o início</a>
-    </section>
-  } @else {
-    <section class="rsvp-card">
-      <p class="eyebrow">Convite exclusivo</p>
-      <h1>Confirme sua presença</h1>
-      <p class="family-name">{{ familyName }}</p>
-      <p class="intro">Marque a resposta de cada integrante da família e salve.</p>
+﻿@if (!code) {
+  <p class="rsvp-note">Para confirmar sua presença, use o link exclusivo que enviamos para a sua família. Se não encontrar, é só falar com a gente.</p>
+} @else if (isLoading) {
+  <app-monogram-loader label="Carregando seu convite..." />
+} @else if (isNotFound) {
+  <p class="rsvp-note">Este convite não foi encontrado ou o link foi substituído. Fale com os noivos para receber o link atualizado.</p>
+} @else if (errorMessage && !guests.length) {
+  <p class="status error">{{ errorMessage }}</p>
+} @else {
+  <div class="invite">
+    <p class="family-name">{{ familyName }}</p>
+    <p class="intro">Marque a resposta de cada integrante da família e salve.</p>
 
-      <ul class="guest-list">
-        @for (guest of guests; track guest.id) {
-          <li class="guest-row">
-            <div class="guest-info">
-              <strong>{{ guest.name }}</strong>
-              <span>{{ categoryLabels[guest.category] }}</span>
-            </div>
-            <div class="choice-group" role="group" [attr.aria-label]="'Resposta de ' + guest.name">
-              <button type="button" class="choice yes" [class.active]="choices[guest.id] === 'confirmed'" (click)="choose(guest, 'confirmed')">Vou</button>
-              <button type="button" class="choice no" [class.active]="choices[guest.id] === 'declined'" (click)="choose(guest, 'declined')">Não vou</button>
-            </div>
-          </li>
-        }
-      </ul>
+    <ul class="guest-list">
+      @for (guest of guests; track guest.id) {
+        <li class="guest-row">
+          <div class="guest-info">
+            <strong>{{ guest.name }}</strong>
+            <span>{{ categoryLabels[guest.category] }}</span>
+          </div>
+          <div class="choice-group" role="group" [attr.aria-label]="'Resposta de ' + guest.name">
+            <button type="button" class="choice yes" [class.active]="choices[guest.id] === 'confirmed'" (click)="choose(guest, 'confirmed')">Vou</button>
+            <button type="button" class="choice no" [class.active]="choices[guest.id] === 'declined'" (click)="choose(guest, 'declined')">Não vou</button>
+          </div>
+        </li>
+      }
+    </ul>
 
-      <button type="button" class="button button-primary" (click)="submit()" [disabled]="isSubmitting || !canSubmit">
-        {{ isSubmitting ? 'Salvando...' : 'Salvar confirmação' }}
-      </button>
-      @if (!canSubmit) { <p class="hint">Escolha "Vou" ou "Não vou" para cada pessoa.</p> }
+    <button type="button" class="button button-primary" (click)="submit()" [disabled]="isSubmitting || !canSubmit">
+      {{ isSubmitting ? 'Salvando...' : 'Salvar confirmação' }}
+    </button>
+    @if (!canSubmit) { <p class="hint">Escolha "Vou" ou "Não vou" para cada pessoa.</p> }
 
-      @if (successMessage) { <p class="status success">{{ successMessage }}</p> }
-      @if (errorMessage) { <p class="status error">{{ errorMessage }}</p> }
-
-      <div class="footer-link">
-        <a [routerLink]="['/']">Voltar para a página inicial</a>
-      </div>
-    </section>
-  }
-</main>
+    @if (successMessage) { <p class="status success">{{ successMessage }}</p> }
+    @if (errorMessage) { <p class="status error">{{ errorMessage }}</p> }
+  </div>
+}

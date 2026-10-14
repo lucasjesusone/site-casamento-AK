@@ -13,19 +13,6 @@
     <button class="button button-secondary" type="button" (click)="reset()">Enviar outra confirmação</button>
   } @else {
     <label class="field">
-      <span>Nome completo do responsável</span>
-      <input
-        name="responsibleName"
-        type="text"
-        autocomplete="name"
-        maxlength="90"
-        required
-        [(ngModel)]="responsibleName"
-        placeholder="Ex.: Maria Silva"
-      />
-    </label>
-
-    <label class="field">
       <span>Telefone para contato</span>
       <input
         name="phone"
@@ -39,37 +26,67 @@
       />
     </label>
 
-    <div class="guest-counts">
-      <label class="field">
-        <span>Quantidade de adultos</span>
-        <input name="adultCount" type="number" min="1" max="30" required [(ngModel)]="adultCount" />
-        <small>Inclua o responsável na contagem.</small>
-      </label>
-
-      <fieldset class="children-field">
-        <legend>Crianças e idades</legend>
-        @for (child of childAges; track child.id; let index = $index) {
-          <div class="child-age-row">
+    <section class="people-section">
+      <div class="section-title">
+        <span class="section-icon" aria-hidden="true">01</span>
+        <div><h3>Adultos</h3><p>Você já está incluído. Adicione quem vem com você.</p></div>
+        <span class="people-count">{{ accompanyingAdults.length + 1 }} {{ accompanyingAdults.length === 0 ? 'adulto' : 'adultos' }}</span>
+      </div>
+      <div class="people-list">
+        <div class="person-row responsible-row">
+          <span class="person-number">01</span>
+          <div class="field">
+            <span>Responsável</span>
+            <input name="responsibleName" type="text" autocomplete="name" maxlength="90" required [(ngModel)]="responsibleName" placeholder="Seu nome completo" />
+          </div>
+          <span class="person-badge">Responsável</span>
+        </div>
+        @for (adult of accompanyingAdults; track adult.id; let index = $index) {
+          <div class="person-row">
+            <span class="person-number">{{ (index + 2).toString().padStart(2, '0') }}</span>
             <label class="field">
-              <span>Idade da criança {{ index + 1 }}</span>
-              <input
-                [name]="'childAge' + index"
-                type="number"
-                min="0"
-                max="17"
-                required
-                [(ngModel)]="childAges[index].age"
-                placeholder="Idade"
-              />
+              <span>Nome completo do adulto {{ index + 2 }}</span>
+              <input [name]="'adultName' + adult.id" type="text" autocomplete="off" maxlength="90" required [(ngModel)]="adult.name" placeholder="Nome e sobrenome" />
             </label>
-            <button class="remove-child" type="button" (click)="removeChild(index)" [attr.aria-label]="'Remover criança ' + (index + 1)">×</button>
+            <button class="remove-person" type="button" (click)="removeAdult(index)" [attr.aria-label]="'Remover adulto ' + (index + 2)">×</button>
           </div>
         }
-        <button class="add-child" type="button" (click)="addChild()" [disabled]="childAges.length >= 30">
-          <span aria-hidden="true">＋</span> {{ childAges.length ? 'Adicionar outra criança' : 'Adicionar criança' }}
-        </button>
-      </fieldset>
-    </div>
+      </div>
+      <button class="add-person" type="button" (click)="addAdult()" [disabled]="accompanyingAdults.length >= 29">
+        <span aria-hidden="true">＋</span> Adicionar adulto
+      </button>
+    </section>
+
+    <section class="people-section children-section">
+      <div class="section-title">
+        <span class="section-icon" aria-hidden="true">02</span>
+        <div><h3>Crianças</h3><p>Se houver crianças, informe o nome e a idade de cada uma.</p></div>
+        <span class="people-count">{{ children.length }} {{ children.length === 1 ? 'criança' : 'crianças' }}</span>
+      </div>
+      @if (children.length) {
+        <div class="people-list">
+          @for (child of children; track child.id; let index = $index) {
+            <div class="person-row child-row">
+              <span class="person-number">{{ (index + 1).toString().padStart(2, '0') }}</span>
+              <label class="field">
+                <span>Nome completo da criança</span>
+                <input [name]="'childName' + child.id" type="text" maxlength="90" required [(ngModel)]="child.name" placeholder="Nome e sobrenome" />
+              </label>
+              <label class="field age-field">
+                <span>Idade</span>
+                <input [name]="'childAge' + child.id" type="number" min="0" max="17" required [(ngModel)]="child.age" placeholder="Anos" />
+              </label>
+              <button class="remove-person" type="button" (click)="removeChild(index)" [attr.aria-label]="'Remover criança ' + (index + 1)">×</button>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="no-children">Sem crianças? Tudo certo — pode seguir para confirmar.</p>
+      }
+      <button class="add-person" type="button" (click)="addChild()" [disabled]="children.length >= 30">
+        <span aria-hidden="true">＋</span> {{ children.length ? 'Adicionar outra criança' : 'Adicionar criança' }}
+      </button>
+    </section>
 
     <p class="privacy-note">Usaremos seu telefone somente para falar sobre a confirmação do casamento.</p>
 

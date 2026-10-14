@@ -32,8 +32,22 @@
           </div>
           <a class="phone-link" [href]="'tel:' + submission.phone">{{ submission.phone }}</a>
           <div class="attendance-details">
-            <span><strong>{{ submission.adultCount }}</strong> {{ submission.adultCount === 1 ? 'adulto' : 'adultos' }}</span>
-            <span><strong>{{ submission.childAges.length }}</strong> {{ submission.childAges.length === 1 ? 'criança' : 'crianças' }}: {{ formatChildren(submission.childAges) }}</span>
+            <div class="attendee-group">
+              <strong>Adultos · {{ submission.adultCount }}</strong>
+              <ul class="attendee-list">
+                @for (name of submission.adultNames; track name) { <li>{{ name }}</li> }
+              </ul>
+            </div>
+            <div class="attendee-group">
+              <strong>Crianças · {{ submission.children.length }}</strong>
+              <ul class="attendee-list">
+                @for (child of submission.children; track $index) {
+                  <li>{{ child.name || 'Nome não informado' }} <span>{{ child.age }} {{ child.age === 1 ? 'ano' : 'anos' }}</span></li>
+                } @empty {
+                  <li class="no-attendees">Nenhuma criança</li>
+                }
+              </ul>
+            </div>
           </div>
         </article>
       }

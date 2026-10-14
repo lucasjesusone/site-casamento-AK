@@ -12,24 +12,34 @@ import { RsvpService } from '../../services/rsvp.service';
 })
 export class RsvpFormComponent {
   private readonly rsvpService = inject(RsvpService);
+  private nextPersonId = 0;
 
   responsibleName = '';
   phone = '';
-  adultCount = 1;
-  childAges: Array<{ id: number; age: number | null }> = [];
+  accompanyingAdults: Array<{ id: number; name: string }> = [];
+  children: Array<{ id: number; name: string; age: number | null }> = [];
   isSubmitting = false;
   successMessage = false;
   errorMessage = '';
-  private nextChildId = 0;
+
+  addAdult(): void {
+    if (this.accompanyingAdults.length < 29) {
+      this.accompanyingAdults = [...this.accompanyingAdults, { id: this.nextPersonId++, name: '' }];
+    }
+  }
+
+  removeAdult(index: number): void {
+    this.accompanyingAdults = this.accompanyingAdults.filter((_, position) => position !== index);
+  }
 
   addChild(): void {
-    if (this.childAges.length < 30) {
-      this.childAges = [...this.childAges, { id: this.nextChildId++, age: null }];
+    if (this.children.length < 30) {
+      this.children = [...this.children, { id: this.nextPersonId++, name: '', age: null }];
     }
   }
 
   removeChild(index: number): void {
-    this.childAges = this.childAges.filter((_, position) => position !== index);
+    this.children = this.children.filter((_, position) => position !== index);
   }
 
   async submit(): Promise<void> {
@@ -39,8 +49,8 @@ export class RsvpFormComponent {
       await this.rsvpService.submitOpen({
         responsibleName: this.responsibleName,
         phone: this.phone,
-        adultCount: Number(this.adultCount),
-        childAges: this.childAges.map((child) => Number(child.age))
+        accompanyingAdults: this.accompanyingAdults.map((adult) => adult.name),
+        children: this.children.map((child) => ({ name: child.name, age: Number(child.age) }))
       });
       this.successMessage = true;
     } catch (error) {
@@ -53,9 +63,10 @@ export class RsvpFormComponent {
   reset(): void {
     this.responsibleName = '';
     this.phone = '';
-    this.adultCount = 1;
-    this.childAges = [];
+    this.accompanyingAdults = [];
+    this.children = [];
     this.successMessage = false;
     this.errorMessage = '';
+    this.nextPersonId = 0;
   }
 }

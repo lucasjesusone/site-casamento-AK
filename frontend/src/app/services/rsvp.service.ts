@@ -13,7 +13,8 @@ export interface RsvpSubmission {
   responsibleName: string;
   phone: string;
   adultCount: number;
-  childAges: number[];
+  adultNames: string[];
+  children: Array<{ name: string; age: number }>;
   createdAt: string;
 }
 
@@ -27,7 +28,7 @@ export class RsvpError extends Error {
 export class RsvpService {
   private readonly giftService = inject(GiftService);
 
-  submitOpen(response: { responsibleName: string; phone: string; adultCount: number; childAges: number[] }): Promise<{ id: string }> {
+  submitOpen(response: { responsibleName: string; phone: string; accompanyingAdults: string[]; children: Array<{ name: string; age: number }> }): Promise<{ id: string }> {
     return this.sendSubmission('/api/rsvp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

@@ -53,5 +53,10 @@ create table if not exists rsvp_submissions (
   phone text not null,
   adult_count integer not null check (adult_count between 1 and 30),
   child_ages integer[] not null default '{}',
+  adult_names text[] not null default '{}',
+  children jsonb not null default '[]'::jsonb,
   created_at text not null
 );
+
+alter table rsvp_submissions add column if not exists adult_names text[] not null default '{}';
+alter table rsvp_submissions add column if not exists children jsonb not null default '[]'::jsonb;

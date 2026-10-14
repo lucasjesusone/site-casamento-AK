@@ -21,15 +21,17 @@ export class AdminRsvpsComponent implements OnInit {
   }
 
   get childTotal(): number {
-    return this.submissions.reduce((total, item) => total + item.childAges.length, 0);
+    return this.submissions.reduce((total, item) => total + item.children.length, 0);
   }
 
   ngOnInit(): void {
     void this.load();
   }
 
-  formatChildren(ages: number[]): string {
-    return ages.length ? ages.map((age) => `${age} ${age === 1 ? 'ano' : 'anos'}`).join(', ') : 'Nenhuma';
+  formatChildren(children: Array<{ name: string; age: number }>): string {
+    return children.length
+      ? children.map((child) => `${child.name || 'Nome não informado'} (${child.age} ${child.age === 1 ? 'ano' : 'anos'})`).join(', ')
+      : 'Nenhuma';
   }
 
   formatDate(value: string): string {
@@ -37,12 +39,12 @@ export class AdminRsvpsComponent implements OnInit {
   }
 
   exportCsv(): void {
-    const header = ['Responsável', 'Telefone', 'Adultos', 'Idades das crianças', 'Enviado em'];
+    const header = ['Responsável', 'Telefone', 'Nomes dos adultos', 'Nomes e idades das crianças', 'Enviado em'];
     const rows = this.submissions.map((item) => [
       item.responsibleName,
       item.phone,
-      item.adultCount,
-      this.formatChildren(item.childAges),
+      item.adultNames.join(', '),
+      this.formatChildren(item.children),
       this.formatDate(item.createdAt)
     ]);
     const csv = [header, ...rows]

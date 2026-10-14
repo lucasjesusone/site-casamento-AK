@@ -649,35 +649,49 @@ async function start() {
     const body = (request.body || {}) as {
       responsibleName?: unknown;
       phone?: unknown;
-      adultCount?: unknown;
-      childAges?: unknown;
+      accompanyingAdults?: unknown;
+      children?: unknown;
     };
     const responsibleName = typeof body.responsibleName === 'string' ? body.responsibleName.trim() : '';
     const phone = typeof body.phone === 'string' ? body.phone.trim() : '';
     const phoneDigits = phone.replace(/\D/g, '');
-    const childAges = body.childAges;
+    const accompanyingAdults = body.accompanyingAdults;
+    const children = body.children;
+    const adultNames = [responsibleName, ...(Array.isArray(accompanyingAdults)
+      ? accompanyingAdults.map((name) => typeof name === 'string' ? name.trim() : '')
+      : [])];
     if (
       !responsibleName ||
       responsibleName.length > 90 ||
       phone.length > 24 ||
       phoneDigits.length < 10 ||
       phoneDigits.length > 13 ||
-      !Number.isInteger(body.adultCount) ||
-      Number(body.adultCount) < 1 ||
-      Number(body.adultCount) > 30 ||
-      !Array.isArray(childAges) ||
-      childAges.length > 30 ||
-      childAges.some((age) => !Number.isInteger(age) || Number(age) < 0 || Number(age) > 17)
+      !Array.isArray(accompanyingAdults) ||
+      accompanyingAdults.length > 29 ||
+      adultNames.length > 30 ||
+      adultNames.some((name) => !name || name.length > 90) ||
+      !Array.isArray(children) ||
+      children.length > 30 ||
+      children.some((child) =>
+        !child ||
+        typeof child !== 'object' ||
+        typeof child.name !== 'string' ||
+        !child.name.trim() ||
+        child.name.trim().length > 90 ||
+        !Number.isInteger(child.age) ||
+        child.age < 0 ||
+        child.age > 17
+      )
     ) {
-      return reply.code(400).send({ error: 'Confira o nome, telefone e as quantidades informadas.' });
+      return reply.code(400).send({ error: 'Confira o nome de cada pessoa e o telefone informado.' });
     }
 
     const id = crypto.randomUUID();
     const createdAt = new Date().toISOString();
     await database.query(
-      `insert into rsvp_submissions (id, responsible_name, phone, adult_count, child_ages, created_at)
-       values ($1, $2, $3, $4, $5, $6)`,
-      [id, responsibleName, phone, Number(body.adultCount), childAges, createdAt]
+      `insert into rsvp_submissions (id, responsible_name, phone, adult_count, child_ages, adult_names, children, created_at)
+       values ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      [id, responsibleName, phone, adultNames.length, children.map((child) => child.age), adultNames, JSON.stringify(children.map((child) => ({ name: child.name.trim(), age: child.age }))), createdAt]
     );
     return reply.code(201).send({ id, createdAt });
   });
@@ -693,9 +707,11 @@ async function start() {
       phone: string;
       adult_count: number;
       child_ages: number[];
+      adult_names: string[];
+      children: Array<{ name: string; age: number }>;
       created_at: string;
     }>(
-      `select id, responsible_name, phone, adult_count, child_ages, created_at
+      `select id, responsible_name, phone, adult_count, child_ages, adult_names, children, created_at
        from rsvp_submissions order by created_at desc`
     );
     return result.rows.map((row) => ({
@@ -703,7 +719,8 @@ async function start() {
       responsibleName: row.responsible_name,
       phone: row.phone,
       adultCount: row.adult_count,
-      childAges: row.child_ages,
+      adultNames: row.adult_names.length ? row.adult_names : [row.responsible_name],
+      children: row.children.length ? row.children : row.child_ages.map((age) => ({ name: '', age })),
       createdAt: row.created_at
     }));
   });

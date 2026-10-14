@@ -1,6 +1,9 @@
 <main class="admin-shell">
   <header class="admin-header">
-    <a class="wordmark" [routerLink]="['/']">A <span>&</span> L</a>
+    <a class="wordmark" [routerLink]="['/']" aria-label="Voltar ao site — Ana Karinne e Lucas Gabriel">
+      <img src="assets/monograma.png" alt="" />
+      <span>Ana Karinne &amp; Lucas Gabriel</span>
+    </a>
     @if (isAuthenticated) {
       <button type="button" class="text-button" (click)="logout()">Sair</button>
     } @else {

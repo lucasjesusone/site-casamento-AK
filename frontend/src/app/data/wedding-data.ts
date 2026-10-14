@@ -26,19 +26,19 @@ export const weddingData = {
     confirmEmail: 'confirmar@anakarinneelucasg.com.br'
   },
   palette: {
-    rose: '#c98a84',
-    blush: '#f3e4df',
-    gold: '#d8bd88',
-    sage: '#b6c7b3',
-    ivory: '#f9f3ee',
-    plum: '#4c3636',
-    taupe: '#73615f'
+    rose: '#a9863f',
+    blush: '#eee8da',
+    gold: '#c29a4a',
+    sage: '#85896f',
+    ivory: '#f7f4eb',
+    plum: '#484638',
+    taupe: '#716d5e'
   },
   location: {
     name: 'Local do casamento',
     address: 'Endereço do local',
     gpsUrl: 'https://share.google/VpGgtIwSPDm1kN9dO',
-    watercolor: ['#f2d7d2', '#d9c4b5', '#c9d9cb', '#e8ccb0']
+    watercolor: ['#f7f4eb', '#ded4c1', '#85896f', '#c29a4a']
   },
   rsvp: {
     title: 'Confirme sua presença',

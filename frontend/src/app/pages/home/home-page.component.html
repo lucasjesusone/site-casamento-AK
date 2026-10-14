@@ -1,6 +1,9 @@
 <main class="page-shell">
   <header class="topbar">
-    <div class="brand">{{ shortName }}</div>
+    <a class="brand" href="#inicio" aria-label="Ana Karinne e Lucas Gabriel — início">
+      <img src="assets/monograma.png" alt="" />
+      <span>{{ title }}</span>
+    </a>
     <nav class="nav">
       <a href="#dia">O dia</a>
       <a href="#galeria">Galeria</a>
@@ -10,7 +13,7 @@
     </nav>
   </header>
 
-  <section class="hero">
+  <section id="inicio" class="hero">
     <div class="hero-copy">
       <p class="eyebrow">Você está convidado para celebrar</p>
       <h1>{{ title }}</h1>

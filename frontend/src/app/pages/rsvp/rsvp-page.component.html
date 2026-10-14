@@ -1,4 +1,4 @@
-<form class="rsvp-form" (ngSubmit)="submit()" #form="ngForm">
+<form class="rsvp-form" (ngSubmit)="submit(form)" #form="ngForm" novalidate>
   <div class="form-heading">
     <span class="form-mark" aria-hidden="true">A <i>&</i> L</span>
     <p>Vai ser uma alegria celebrar com você.</p>
@@ -20,12 +20,16 @@
         inputmode="tel"
         autocomplete="tel"
         maxlength="19"
-        pattern="(?:\+55 )?\(\d{2}\) \d{4,5}-\d{4}"
         required
         [(ngModel)]="phone"
-        (input)="formatPhone($event)"
+        (ngModelChange)="phone = formatPhone($event)"
+        [class.invalid]="(phoneControl.touched || form.submitted || phone) && !isValidPhone(phone)"
+        #phoneControl="ngModel"
         placeholder="(00) 00000-0000"
       />
+      @if ((phoneControl.touched || form.submitted || phone) && !isValidPhone(phone)) {
+        <small class="field-error">{{ phone ? 'Informe um telefone válido com DDD.' : 'Informe seu telefone para contato.' }}</small>
+      }
     </label>
 
     <section class="people-section">
@@ -39,8 +43,11 @@
           <span class="person-number">01</span>
           <div class="field">
             <span>Responsável</span>
-            <input name="responsibleName" type="text" autocomplete="name" maxlength="90" pattern="\S+(\s+\S)+" title="Informe nome e sobrenome." required [(ngModel)]="responsibleName" placeholder="Seu nome e sobrenome" />
+            <input name="responsibleName" type="text" autocomplete="name" maxlength="90" required [(ngModel)]="responsibleName" [class.invalid]="(responsibleControl.touched || form.submitted || responsibleName) && !hasFullName(responsibleName)" #responsibleControl="ngModel" placeholder="Seu nome e sobrenome" />
           </div>
+          @if ((responsibleControl.touched || form.submitted || responsibleName) && !hasFullName(responsibleName)) {
+            <small class="field-error responsible-error" role="alert">{{ responsibleName ? 'Informe nome e sobrenome.' : 'Informe o nome completo do responsável.' }}</small>
+          }
           <span class="person-badge">Responsável</span>
         </div>
         @for (adult of accompanyingAdults; track adult.id; let index = $index) {
@@ -48,8 +55,11 @@
             <span class="person-number">{{ (index + 2).toString().padStart(2, '0') }}</span>
             <label class="field">
               <span>Nome completo do adulto {{ index + 2 }}</span>
-              <input [name]="'adultName' + adult.id" type="text" autocomplete="off" maxlength="90" pattern="\S+(\s+\S)+" title="Informe nome e sobrenome." required [(ngModel)]="adult.name" placeholder="Nome e sobrenome" />
+              <input [name]="'adultName' + adult.id" type="text" autocomplete="off" maxlength="90" required [(ngModel)]="adult.name" [class.invalid]="(adultControl.touched || form.submitted || adult.name) && !hasFullName(adult.name)" #adultControl="ngModel" placeholder="Nome e sobrenome" />
             </label>
+            @if ((adultControl.touched || form.submitted || adult.name) && !hasFullName(adult.name)) {
+              <small class="field-error adult-error" role="alert">{{ adult.name ? 'Informe nome e sobrenome.' : 'Informe o nome completo.' }}</small>
+            }
             <button class="remove-person" type="button" (click)="removeAdult(index)" [attr.aria-label]="'Remover adulto ' + (index + 2)">×</button>
           </div>
         }
@@ -72,12 +82,18 @@
               <span class="person-number">{{ (index + 1).toString().padStart(2, '0') }}</span>
               <label class="field">
                 <span>Nome completo da criança</span>
-                <input [name]="'childName' + child.id" type="text" maxlength="90" pattern="\S+(\s+\S)+" title="Informe nome e sobrenome." required [(ngModel)]="child.name" placeholder="Nome e sobrenome" />
+                <input [name]="'childName' + child.id" type="text" maxlength="90" required [(ngModel)]="child.name" [class.invalid]="(childNameControl.touched || form.submitted || child.name) && !hasFullName(child.name)" #childNameControl="ngModel" placeholder="Nome e sobrenome" />
               </label>
+              @if ((childNameControl.touched || form.submitted || child.name) && !hasFullName(child.name)) {
+                <small class="field-error child-name-error" role="alert">{{ child.name ? 'Informe nome e sobrenome.' : 'Informe o nome completo.' }}</small>
+              }
               <label class="field age-field">
                 <span>Idade</span>
-                <input [name]="'childAge' + child.id" type="number" min="0" max="17" required [(ngModel)]="child.age" placeholder="Anos" />
+                <input [name]="'childAge' + child.id" type="number" min="0" max="17" required [(ngModel)]="child.age" [class.invalid]="(childAgeControl.touched || form.submitted || child.age !== null) && childAgeControl.invalid" #childAgeControl="ngModel" placeholder="Anos" />
               </label>
+              @if ((childAgeControl.touched || form.submitted || child.age !== null) && childAgeControl.invalid) {
+                <small class="field-error child-age-error" role="alert">{{ child.age === null ? 'Informe a idade.' : 'Use uma idade entre 0 e 17 anos.' }}</small>
+              }
               <button class="remove-person" type="button" (click)="removeChild(index)" [attr.aria-label]="'Remover criança ' + (index + 1)">×</button>
             </div>
           }
@@ -93,7 +109,7 @@
     <p class="privacy-note">Usaremos seu telefone somente para falar sobre a confirmação do casamento.</p>
 
     @if (errorMessage) { <p class="status error" role="alert">{{ errorMessage }}</p> }
-    <button class="button button-primary submit-button" type="submit" [disabled]="isSubmitting || !form.form.valid">
+    <button class="button button-primary submit-button" type="submit" [disabled]="isSubmitting">
       {{ isSubmitting ? 'Enviando confirmação...' : 'Confirmar presença' }}
       @if (!isSubmitting) { <span aria-hidden="true">↗</span> }
     </button>

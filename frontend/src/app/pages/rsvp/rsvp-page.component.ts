@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, type NgForm } from '@angular/forms';
 import { RsvpService } from '../../services/rsvp.service';
 
 @Component({
@@ -22,9 +22,8 @@ export class RsvpFormComponent {
   successMessage = false;
   errorMessage = '';
 
-  formatPhone(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    let digits = input.value.replace(/\D/g, '');
+  formatPhone(value: string): string {
+    let digits = value.replace(/\D/g, '');
     const hasCountryCode = digits.startsWith('55') && (digits.length === 12 || digits.length === 13);
     if (hasCountryCode) {
       digits = digits.slice(2);
@@ -34,9 +33,9 @@ export class RsvpFormComponent {
 
     const areaCode = digits.slice(0, 2);
     const number = digits.slice(2);
-    let formatted = areaCode;
+    let formatted = areaCode ? `(${areaCode}` : '';
     if (areaCode.length === 2) {
-      formatted = `(${areaCode})`;
+      formatted += ')';
     }
     if (number.length) {
       formatted += ` ${number.length > 8 ? number.slice(0, 5) : number.slice(0, 4)}`;
@@ -44,8 +43,19 @@ export class RsvpFormComponent {
         formatted += `-${number.slice(number.length > 8 ? 5 : 4)}`;
       }
     }
-    this.phone = `${hasCountryCode ? '+55 ' : ''}${formatted}`;
-    input.value = this.phone;
+    return `${hasCountryCode ? '+55 ' : ''}${formatted}`;
+  }
+
+  isValidPhone(value: string): boolean {
+    const digits = value.replace(/\D/g, '');
+    const localDigits = digits.startsWith('55') && (digits.length === 12 || digits.length === 13)
+      ? digits.slice(2)
+      : digits;
+    return localDigits.length === 10 || localDigits.length === 11;
+  }
+
+  hasFullName(value: string): boolean {
+    return value.trim().split(/\s+/).filter(Boolean).length >= 2;
   }
 
   addAdult(): void {
@@ -68,8 +78,18 @@ export class RsvpFormComponent {
     this.children = this.children.filter((_, position) => position !== index);
   }
 
-  async submit(): Promise<void> {
+  async submit(form: NgForm): Promise<void> {
     this.errorMessage = '';
+    form.control.markAllAsTouched();
+    const isValid = form.valid &&
+      this.hasFullName(this.responsibleName) &&
+      this.accompanyingAdults.every((adult) => this.hasFullName(adult.name)) &&
+      this.children.every((child) => this.hasFullName(child.name) && child.age !== null && child.age >= 0 && child.age <= 17) &&
+      this.isValidPhone(this.phone);
+    if (!isValid) {
+      return;
+    }
+
     this.isSubmitting = true;
     try {
       await this.rsvpService.submitOpen({

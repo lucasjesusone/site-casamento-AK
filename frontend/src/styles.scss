@@ -1,17 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg-ivory: #f9f3ee;
-  --bg-blush: #f4e5e1;
-  --panel: rgba(255, 255, 255, 0.7);
-  --panel-strong: rgba(255, 255, 255, 0.82);
-  --accent-rose: #c98a84;
-  --accent-gold: #d8bd88;
-  --accent-sage: #b6c7b3;
-  --accent-plum: #4c3636;
-  --text-strong: #352a29;
-  --text-soft: #695d5b;
-  --shadow-soft: rgba(77, 54, 54, 0.12);
+  --bg-ivory: #f7f4eb;
+  --bg-blush: #eee8da;
+  --panel: rgba(255, 255, 255, 0.68);
+  --panel-strong: rgba(255, 255, 255, 0.86);
+  --accent-rose: #a9863f;
+  --accent-gold: #c29a4a;
+  --accent-gold-deep: #8d6727;
+  --accent-sage: #85896f;
+  --accent-olive: #62684f;
+  --accent-plum: #484638;
+  --text-strong: #3f3d32;
+  --text-soft: #716d5e;
+  --shadow-soft: rgba(72, 70, 56, 0.12);
+  --border-soft: rgba(86, 83, 64, 0.14);
+  --success-ink: #5d694d;
+  --success-wash: #edf0e6;
+  --danger-ink: #945b48;
   --font-serif: 'Cormorant Garamond', serif;
   --font-sans: 'Inter', sans-serif;
 }
@@ -25,7 +31,7 @@ body {
   min-height: 100vh;
   background:
     radial-gradient(circle at top, rgba(255, 255, 255, 0.92), transparent 25%),
-    linear-gradient(180deg, var(--bg-ivory) 0%, #f5ece6 100%);
+    linear-gradient(180deg, var(--bg-ivory) 0%, #eee8da 100%);
   color: var(--text-strong);
   font-family: var(--font-sans);
 }
@@ -57,4 +63,3 @@ p {
 ::selection {
   background: rgba(201, 138, 132, 0.22);
 }
-

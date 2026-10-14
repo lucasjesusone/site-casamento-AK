@@ -2,23 +2,29 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <title>CasamentoAL</title>
+  <title>Ana Karinne &amp; Lucas Gabriel</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <meta name="theme-color" content="#f7f4eb">
+  <meta name="description" content="Vamos celebrar o começo da nossa história — Ana Karinne & Lucas Gabriel, 10 de julho de 2027.">
+  <link rel="icon" type="image/png" href="assets/monograma.png">
   <script src="assets/runtime-config.js"></script>
   <style>
-    #splash { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; background: #f8f4ea; transition: opacity .6s ease, visibility .6s ease; }
+    #splash { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; background: #f7f4eb; transition: opacity .6s ease, visibility .6s ease; }
     #splash.hide { opacity: 0; visibility: hidden; pointer-events: none; }
-    #splash img { width: min(46vw, 190px); height: auto; animation: splash-pulse 1.8s ease-in-out infinite; }
-    #splash::after { content: ''; position: absolute; bottom: 18%; width: 90px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, transparent, #b8924f, transparent); background-size: 200% 100%; animation: splash-shine 1.4s linear infinite; }
+    #splash img { width: min(42vw, 170px); height: auto; mix-blend-mode: multiply; animation: splash-pulse 1.8s ease-in-out infinite; }
+    #splash p { margin: 0; color: #8d6727; font: italic 22px 'Cormorant Garamond', Georgia, serif; text-align: center; }
+    #splash::after { content: ''; position: absolute; bottom: 18%; width: 110px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, transparent, #c29a4a, #85896f, transparent); background-size: 200% 100%; animation: splash-shine 1.4s linear infinite; }
     @keyframes splash-pulse { 0%, 100% { opacity: .55; transform: scale(.97); } 50% { opacity: 1; transform: scale(1); } }
     @keyframes splash-shine { from { background-position: 200% 0; } to { background-position: -200% 0; } }
     @media (prefers-reduced-motion: reduce) { #splash img, #splash::after { animation: none; } }
   </style>
 </head>
 <body>
-  <div id="splash" role="status" aria-label="Carregando"><img src="assets/monograma.png" alt="Monograma A & L"></div>
+  <div id="splash" role="status" aria-label="Carregando">
+    <img src="assets/monograma.png" alt="Monograma Ana Karinne e Lucas Gabriel">
+    <p>Vamos celebrar o começo da nossa história</p>
+  </div>
   <app-root></app-root>
 </body>
 </html>

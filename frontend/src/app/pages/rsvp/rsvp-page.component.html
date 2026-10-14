@@ -19,9 +19,11 @@
         type="tel"
         inputmode="tel"
         autocomplete="tel"
-        maxlength="24"
+        maxlength="19"
+        pattern="(?:\+55 )?\(\d{2}\) \d{4,5}-\d{4}"
         required
         [(ngModel)]="phone"
+        (input)="formatPhone($event)"
         placeholder="(00) 00000-0000"
       />
     </label>
@@ -37,7 +39,7 @@
           <span class="person-number">01</span>
           <div class="field">
             <span>Responsável</span>
-            <input name="responsibleName" type="text" autocomplete="name" maxlength="90" required [(ngModel)]="responsibleName" placeholder="Seu nome completo" />
+            <input name="responsibleName" type="text" autocomplete="name" maxlength="90" pattern="\S+(\s+\S)+" title="Informe nome e sobrenome." required [(ngModel)]="responsibleName" placeholder="Seu nome e sobrenome" />
           </div>
           <span class="person-badge">Responsável</span>
         </div>
@@ -46,7 +48,7 @@
             <span class="person-number">{{ (index + 2).toString().padStart(2, '0') }}</span>
             <label class="field">
               <span>Nome completo do adulto {{ index + 2 }}</span>
-              <input [name]="'adultName' + adult.id" type="text" autocomplete="off" maxlength="90" required [(ngModel)]="adult.name" placeholder="Nome e sobrenome" />
+              <input [name]="'adultName' + adult.id" type="text" autocomplete="off" maxlength="90" pattern="\S+(\s+\S)+" title="Informe nome e sobrenome." required [(ngModel)]="adult.name" placeholder="Nome e sobrenome" />
             </label>
             <button class="remove-person" type="button" (click)="removeAdult(index)" [attr.aria-label]="'Remover adulto ' + (index + 2)">×</button>
           </div>
@@ -70,7 +72,7 @@
               <span class="person-number">{{ (index + 1).toString().padStart(2, '0') }}</span>
               <label class="field">
                 <span>Nome completo da criança</span>
-                <input [name]="'childName' + child.id" type="text" maxlength="90" required [(ngModel)]="child.name" placeholder="Nome e sobrenome" />
+                <input [name]="'childName' + child.id" type="text" maxlength="90" pattern="\S+(\s+\S)+" title="Informe nome e sobrenome." required [(ngModel)]="child.name" placeholder="Nome e sobrenome" />
               </label>
               <label class="field age-field">
                 <span>Idade</span>

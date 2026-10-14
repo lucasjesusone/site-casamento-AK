@@ -22,6 +22,32 @@ export class RsvpFormComponent {
   successMessage = false;
   errorMessage = '';
 
+  formatPhone(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let digits = input.value.replace(/\D/g, '');
+    const hasCountryCode = digits.startsWith('55') && (digits.length === 12 || digits.length === 13);
+    if (hasCountryCode) {
+      digits = digits.slice(2);
+    } else {
+      digits = digits.slice(0, 11);
+    }
+
+    const areaCode = digits.slice(0, 2);
+    const number = digits.slice(2);
+    let formatted = areaCode;
+    if (areaCode.length === 2) {
+      formatted = `(${areaCode})`;
+    }
+    if (number.length) {
+      formatted += ` ${number.length > 8 ? number.slice(0, 5) : number.slice(0, 4)}`;
+      if (number.length > (number.length > 8 ? 5 : 4)) {
+        formatted += `-${number.slice(number.length > 8 ? 5 : 4)}`;
+      }
+    }
+    this.phone = `${hasCountryCode ? '+55 ' : ''}${formatted}`;
+    input.value = this.phone;
+  }
+
   addAdult(): void {
     if (this.accompanyingAdults.length < 29) {
       this.accompanyingAdults = [...this.accompanyingAdults, { id: this.nextPersonId++, name: '' }];

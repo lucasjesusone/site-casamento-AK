@@ -85,11 +85,15 @@ export class RsvpService {
     try {
       response = await fetch(apiUrl(path), init);
     } catch {
-      throw new RsvpError('Não foi possível conectar. Tente novamente em instantes.', 0);
+      throw new RsvpError('Não foi possível conectar ao servidor de confirmações. Verifique sua conexão e tente novamente em instantes.', 0);
     }
-    const result = (await response.json().catch(() => ({}))) as { id?: string; error?: string };
+    const result = (await response.json().catch(() => ({}))) as { id?: string; error?: string; message?: string };
     if (!response.ok || !result.id) {
-      throw new RsvpError(result.error || 'Não foi possível salvar a confirmação.', response.status);
+      const message = result.error || result.message;
+      if (response.status === 404) {
+        throw new RsvpError('O serviço de confirmações está desatualizado. Avise os noivos para atualizarem a publicação e tente novamente.', response.status);
+      }
+      throw new RsvpError(message || 'Não foi possível salvar a confirmação.', response.status);
     }
     return { id: result.id };
   }

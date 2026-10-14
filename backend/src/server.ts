@@ -180,6 +180,10 @@ function generateFamilyCode(): string {
   return randomBytes(9).toString('base64url');
 }
 
+function hasFirstAndLastName(value: string): boolean {
+  return value.trim().split(/\s+/).length >= 2;
+}
+
 async function readFamilies() {
   const families = await database.query<FamilyRow>('select id, name, code, created_at from families order by name asc');
   const guests = await database.query<GuestRow>(
@@ -655,6 +659,7 @@ async function start() {
     const responsibleName = typeof body.responsibleName === 'string' ? body.responsibleName.trim() : '';
     const phone = typeof body.phone === 'string' ? body.phone.trim() : '';
     const phoneDigits = phone.replace(/\D/g, '');
+    const localPhoneDigits = phoneDigits.startsWith('55') && phoneDigits.length >= 12 ? phoneDigits.slice(2) : phoneDigits;
     const accompanyingAdults = body.accompanyingAdults;
     const children = body.children;
     const adultNames = [responsibleName, ...(Array.isArray(accompanyingAdults)
@@ -662,21 +667,21 @@ async function start() {
       : [])];
     if (
       !responsibleName ||
+      !hasFirstAndLastName(responsibleName) ||
       responsibleName.length > 90 ||
       phone.length > 24 ||
-      phoneDigits.length < 10 ||
-      phoneDigits.length > 13 ||
+      ![10, 11].includes(localPhoneDigits.length) ||
       !Array.isArray(accompanyingAdults) ||
       accompanyingAdults.length > 29 ||
       adultNames.length > 30 ||
-      adultNames.some((name) => !name || name.length > 90) ||
+      adultNames.some((name) => !hasFirstAndLastName(name) || name.length > 90) ||
       !Array.isArray(children) ||
       children.length > 30 ||
       children.some((child) =>
         !child ||
         typeof child !== 'object' ||
         typeof child.name !== 'string' ||
-        !child.name.trim() ||
+        !hasFirstAndLastName(child.name) ||
         child.name.trim().length > 90 ||
         !Number.isInteger(child.age) ||
         child.age < 0 ||

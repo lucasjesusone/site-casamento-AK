@@ -29,6 +29,10 @@ export class RsvpFormComponent implements OnInit {
   isSubmitting = false;
   successMessage = '';
   errorMessage = '';
+  searchResults: Array<{ code: string; familyName: string }> = [];
+  searchDone = false;
+  isSearching = false;
+  searchError = '';
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) {
@@ -39,6 +43,29 @@ export class RsvpFormComponent implements OnInit {
     if (this.code) {
       void this.load();
     }
+  }
+
+  async search(term: string): Promise<void> {
+    this.searchError = '';
+    this.searchDone = false;
+    this.isSearching = true;
+    try {
+      this.searchResults = await this.rsvpService.search(term);
+      this.searchDone = true;
+    } catch (error) {
+      this.searchResults = [];
+      this.searchError = error instanceof Error ? error.message : 'Não foi possível buscar.';
+    } finally {
+      this.isSearching = false;
+    }
+  }
+
+  async select(code: string): Promise<void> {
+    this.code = code;
+    this.isNotFound = false;
+    this.errorMessage = '';
+    this.isLoading = true;
+    await this.load(false);
   }
 
   get canSubmit(): boolean {
@@ -60,7 +87,7 @@ export class RsvpFormComponent implements OnInit {
         this.guests.map((guest) => ({ guestId: guest.id, status: this.choices[guest.id] as 'confirmed' | 'declined' }))
       );
       this.apply(invite.familyName, invite.guests);
-      this.successMessage = 'Respostas salvas! Você pode voltar a este link para alterar, se precisar.';
+      this.successMessage = 'Respostas salvas! Se precisar alterar, é só procurar seu nome aqui de novo.';
     } catch (error) {
       this.errorMessage = error instanceof Error ? error.message : 'Não foi possível salvar.';
     } finally {
@@ -68,7 +95,7 @@ export class RsvpFormComponent implements OnInit {
     }
   }
 
-  private async load(): Promise<void> {
+  private async load(scroll = true): Promise<void> {
     try {
       const invite = await this.rsvpService.getInvite(this.code);
       this.apply(invite.familyName, invite.guests);
@@ -80,7 +107,9 @@ export class RsvpFormComponent implements OnInit {
       }
     } finally {
       this.isLoading = false;
-      setTimeout(() => document.getElementById('rsvp')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+      if (scroll) {
+        setTimeout(() => document.getElementById('rsvp')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+      }
     }
   }
 

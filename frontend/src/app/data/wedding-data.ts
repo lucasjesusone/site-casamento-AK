@@ -42,7 +42,7 @@ export const weddingData = {
   },
   rsvp: {
     title: 'Confirme sua presença',
-    description: 'Confirme a presença de cada integrante da sua família. Use o link exclusivo que enviamos para você.',
+    description: 'Procure seu nome abaixo e confirme a presença de cada integrante da sua família.',
     email: 'confirmar@anakarinneelucasg.com.br'
   },
   media: {

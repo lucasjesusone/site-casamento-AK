@@ -15,6 +15,20 @@ export class RsvpError extends Error {
 
 @Injectable({ providedIn: 'root' })
 export class RsvpService {
+  async search(query: string): Promise<Array<{ code: string; familyName: string }>> {
+    let response: Response;
+    try {
+      response = await fetch(apiUrl(`/api/rsvp-search?q=${encodeURIComponent(query)}`));
+    } catch {
+      throw new RsvpError('Não foi possível conectar. Tente novamente em instantes.', 0);
+    }
+    const result = (await response.json().catch(() => ({}))) as { error?: string } & Array<{ code: string; familyName: string }>;
+    if (!response.ok) {
+      throw new RsvpError(result.error || 'Não foi possível buscar.', response.status);
+    }
+    return result;
+  }
+
   getInvite(code: string): Promise<RsvpInvite> {
     return this.send(`/api/rsvp/${encodeURIComponent(code)}`);
   }

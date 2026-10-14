@@ -1,9 +1,25 @@
-﻿@if (!code) {
-  <p class="rsvp-note">Para confirmar sua presença, use o link exclusivo que enviamos para a sua família. Se não encontrar, é só falar com a gente.</p>
+@if (!code) {
+  <form class="search" (submit)="$event.preventDefault(); search(term.value)">
+    <label for="rsvp-search">Digite seu nome ou o nome da sua família</label>
+    <div class="search-row">
+      <input #term id="rsvp-search" type="text" autocomplete="off" minlength="3" maxlength="90" placeholder="Ex.: Maria Silva" />
+      <button type="submit" class="button button-primary" [disabled]="isSearching">{{ isSearching ? 'Buscando...' : 'Buscar' }}</button>
+    </div>
+    @if (searchError) { <p class="status error">{{ searchError }}</p> }
+    @if (searchDone && !searchResults.length) { <p class="hint">Não encontramos esse nome. Tente outra parte do nome ou fale com a gente.</p> }
+    @if (searchResults.length) {
+      <p class="hint">Toque na sua família:</p>
+      <ul class="results">
+        @for (result of searchResults; track result.code) {
+          <li><button type="button" (click)="select(result.code)">{{ result.familyName }}</button></li>
+        }
+      </ul>
+    }
+  </form>
 } @else if (isLoading) {
   <app-monogram-loader label="Carregando seu convite..." />
 } @else if (isNotFound) {
-  <p class="rsvp-note">Este convite não foi encontrado ou o link foi substituído. Fale com os noivos para receber o link atualizado.</p>
+  <p class="rsvp-note">Este convite não foi encontrado ou o link foi substituído. <a href="#rsvp" (click)="code = ''; isNotFound = false">Procure pelo seu nome</a> ou fale com os noivos.</p>
 } @else if (errorMessage && !guests.length) {
   <p class="status error">{{ errorMessage }}</p>
 } @else {

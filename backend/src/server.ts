@@ -617,6 +617,30 @@ async function start() {
     return reply.code(204).send();
   });
 
+  app.get('/api/rsvp-search', async (request, reply) => {
+    if (isRsvpRateLimited(request.ip)) {
+      return reply.code(429).send({ error: 'Muitas tentativas. Aguarde um minuto e tente novamente.' });
+    }
+
+    const normalize = (value: string) =>
+      value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    const term = normalize(String((request.query as { q?: string }).q ?? ''));
+    if (term.length < 3) {
+      return reply.code(400).send({ error: 'Digite pelo menos 3 letras do nome.' });
+    }
+
+    const rows = await database.query<{ code: string; family_name: string; guest_name: string | null }>(
+      'select f.code, f.name as family_name, g.name as guest_name from families f left join guests g on g.family_id = f.id'
+    );
+    const matches = new Map<string, string>();
+    for (const row of rows.rows) {
+      if (normalize(row.family_name).includes(term) || (row.guest_name && normalize(row.guest_name).includes(term))) {
+        matches.set(row.code, row.family_name);
+      }
+    }
+    return [...matches].slice(0, 8).map(([code, familyName]) => ({ code, familyName }));
+  });
+
   app.get('/api/rsvp/:code', async (request, reply) => {
     if (isRsvpRateLimited(request.ip)) {
       return reply.code(429).send({ error: 'Muitas tentativas. Aguarde um minuto e tente novamente.' });

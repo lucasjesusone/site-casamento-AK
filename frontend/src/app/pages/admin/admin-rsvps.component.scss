@@ -1,0 +1,33 @@
+.rsvp-dashboard { display: grid; gap: 20px; }
+.rsvp-dashboard-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.rsvp-dashboard-heading h2 { margin: 0; color: #25312f; font-family: var(--font-serif); font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 600; }
+.rsvp-dashboard-heading h2 span { display: inline-grid; min-width: 28px; height: 28px; place-items: center; border-radius: 50%; color: #385c52; background: #e9f0eb; font: 700 .8rem var(--font-sans); vertical-align: middle; }
+.actions { display: flex; gap: 8px; }
+.actions button { min-height: 42px; border-radius: 4px; padding: 0 14px; font: inherit; font-size: .85rem; font-weight: 700; cursor: pointer; }
+.primary-button { border: 0; color: #fff; background: #385c52; }
+.secondary-button { border: 1px solid #cad5ce; color: #385c52; background: #fff; }
+.actions button:disabled { opacity: .5; cursor: not-allowed; }
+.rsvp-totals { display: flex; gap: 12px; }
+.rsvp-totals div { display: grid; min-width: 120px; gap: 3px; padding: 14px 18px; border: 1px solid #e0e5df; background: #fff; }
+.rsvp-totals strong { color: #385c52; font-family: var(--font-serif); font-size: 1.7rem; }
+.rsvp-totals span { color: #6d7974; font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; }
+.submission-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.submission-card { display: grid; gap: 12px; padding: 18px; border: 1px solid #e0e5df; background: #fff; }
+.submission-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.submission-heading h3 { margin: 0; color: #25312f; font-family: var(--font-serif); font-size: 1.25rem; }
+.submission-heading time { color: #7a8681; font-size: .75rem; white-space: nowrap; }
+.phone-link { color: #385c52; font-size: .9rem; text-decoration: none; }
+.phone-link:hover { text-decoration: underline; }
+.attendance-details { display: grid; gap: 5px; padding-top: 10px; border-top: 1px solid #e7ebe7; color: #6d7974; font-size: .85rem; }
+.attendance-details strong { color: #25312f; }
+.loading-state { margin: 0; padding: 32px 16px; color: #6d7974; text-align: center; }
+.empty-state { display: grid; min-height: 160px; place-content: center; justify-items: center; gap: 12px; border: 1px solid #e0e5df; color: #78837e; text-align: center; }
+.empty-state p { margin: 0; }
+.empty-mark { display: grid; width: 38px; height: 38px; place-items: center; border: 1px solid #cad5ce; border-radius: 50%; color: #385c52; font-size: 1.4rem; }
+
+@media (max-width: 620px) {
+  .rsvp-dashboard-heading { align-items: flex-start; flex-direction: column; }
+  .actions { width: 100%; }
+  .actions button { flex: 1; }
+  .rsvp-totals div { flex: 1; }
+}

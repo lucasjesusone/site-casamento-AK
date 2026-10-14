@@ -27,6 +27,8 @@ export class HomePageComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   @ViewChild('giftPagesViewport') private giftPagesViewport?: ElementRef<HTMLDivElement>;
   private galleryTimer?: ReturnType<typeof setInterval>;
+  private countdownTimer?: ReturnType<typeof setInterval>;
+  private readonly weddingMoment = new Date('2027-07-10T00:00:00-03:00').getTime();
 
   readonly title = weddingData.couple.names;
   readonly shortName = weddingData.couple.short;
@@ -51,12 +53,22 @@ export class HomePageComponent implements OnInit, OnDestroy {
   paymentReturnMessage = '';
   paymentReturnStatus: 'success' | 'pending' | 'failure' | '' = '';
   paymentReturnTotal = 0;
+  countdown = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  isWeddingDay = false;
   private readonly cartStorageKey = 'sitecasamento-gift-cart';
 
   ngOnInit(): void {
     this.startGalleryAutoplay();
+    this.updateCountdown();
 
     if (isPlatformBrowser(this.platformId)) {
+      this.countdownTimer = setInterval(() => {
+        this.updateCountdown();
+        if (this.isWeddingDay && this.countdownTimer) {
+          clearInterval(this.countdownTimer);
+          this.countdownTimer = undefined;
+        }
+      }, 1000);
       this.restoreCart();
       void this.loadPaymentReturn();
       void this.mediaService.loadGallery().then((gallery) => {
@@ -77,6 +89,21 @@ export class HomePageComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stopGalleryAutoplay();
+    if (this.countdownTimer) {
+      clearInterval(this.countdownTimer);
+    }
+  }
+
+  private updateCountdown(): void {
+    const remaining = Math.max(0, this.weddingMoment - Date.now());
+    this.isWeddingDay = remaining === 0;
+    const totalSeconds = Math.floor(remaining / 1000);
+    this.countdown = {
+      days: Math.floor(totalSeconds / 86400),
+      hours: Math.floor((totalSeconds % 86400) / 3600),
+      minutes: Math.floor((totalSeconds % 3600) / 60),
+      seconds: totalSeconds % 60
+    };
   }
 
   get activeGalleryItem() {

@@ -1,0 +1,42 @@
+<section class="rsvp-dashboard">
+  <div class="rsvp-dashboard-heading">
+    <div>
+      <p class="eyebrow">Respostas recebidas</p>
+      <h2>Confirmações de presença <span>{{ submissions.length }}</span></h2>
+    </div>
+    <div class="actions">
+      <button type="button" class="secondary-button" (click)="load()" [disabled]="isLoading">Atualizar</button>
+      <button type="button" class="primary-button" (click)="exportCsv()" [disabled]="!submissions.length">Exportar CSV</button>
+    </div>
+  </div>
+
+  @if (submissions.length) {
+    <div class="rsvp-totals" aria-label="Total de convidados que confirmaram">
+      <div><strong>{{ adultTotal }}</strong><span>adultos</span></div>
+      <div><strong>{{ childTotal }}</strong><span>crianças</span></div>
+    </div>
+  }
+
+  @if (error) { <p class="notice error-message" role="alert">{{ error }}</p> }
+  @if (isLoading) {
+    <p class="loading-state">Carregando confirmações...</p>
+  } @else if (!submissions.length) {
+    <div class="empty-state"><span class="empty-mark" aria-hidden="true">♡</span><p>Nenhuma confirmação recebida ainda.</p></div>
+  } @else {
+    <div class="submission-list">
+      @for (submission of submissions; track submission.id) {
+        <article class="submission-card">
+          <div class="submission-heading">
+            <h3>{{ submission.responsibleName }}</h3>
+            <time [attr.datetime]="submission.createdAt">{{ formatDate(submission.createdAt) }}</time>
+          </div>
+          <a class="phone-link" [href]="'tel:' + submission.phone">{{ submission.phone }}</a>
+          <div class="attendance-details">
+            <span><strong>{{ submission.adultCount }}</strong> {{ submission.adultCount === 1 ? 'adulto' : 'adultos' }}</span>
+            <span><strong>{{ submission.childAges.length }}</strong> {{ submission.childAges.length === 1 ? 'criança' : 'crianças' }}: {{ formatChildren(submission.childAges) }}</span>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>

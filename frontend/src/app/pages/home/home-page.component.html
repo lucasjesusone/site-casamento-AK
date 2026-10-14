@@ -32,6 +32,24 @@
     </div>
   </section>
 
+  <section class="countdown-banner" aria-label="Contagem regressiva para o casamento">
+    <div class="countdown-copy">
+      <p class="eyebrow">Contagem regressiva</p>
+      <h2>O nosso grande dia</h2>
+      <p>10 de julho de 2027</p>
+    </div>
+    @if (isWeddingDay) {
+      <p class="countdown-celebration">Hoje é o grande dia! Estamos esperando por você. ♡</p>
+    } @else {
+      <div class="countdown-units" aria-live="off">
+        <div class="countdown-unit"><strong>{{ countdown.days }}</strong><span>dias</span></div>
+        <div class="countdown-unit"><strong>{{ countdown.hours }}</strong><span>horas</span></div>
+        <div class="countdown-unit"><strong>{{ countdown.minutes }}</strong><span>minutos</span></div>
+        <div class="countdown-unit"><strong>{{ countdown.seconds }}</strong><span>segundos</span></div>
+      </div>
+    }
+  </section>
+
   <section id="dia" class="schedule">
     <div class="section-heading">
       <p class="eyebrow">Programação</p>
@@ -281,6 +299,7 @@
     <div class="section-heading">
       <p class="eyebrow">Confirmação</p>
       <h2>{{ rsvp.title }}</h2>
+      <p class="rsvp-intro">{{ rsvp.description }}</p>
     </div>
 
     <div class="rsvp-card">

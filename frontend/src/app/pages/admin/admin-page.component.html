@@ -35,7 +35,7 @@
     <section class="dashboard-heading">
       <div>
         <p class="eyebrow">Administração</p>
-        <h1>{{ tab === 'gifts' ? 'Lista de presentes' : 'Convidados' }}</h1>
+        <h1>{{ tab === 'gifts' ? 'Lista de presentes' : (tab === 'guests' ? 'Convidados' : 'Confirmações') }}</h1>
       </div>
       <a class="site-link" [routerLink]="['/']">Ver site <span aria-hidden="true">↗</span></a>
     </section>
@@ -43,9 +43,12 @@
     <nav class="admin-tabs" aria-label="Seções da administração">
       <button type="button" [class.active]="tab === 'gifts'" (click)="tab = 'gifts'">Presentes</button>
       <button type="button" [class.active]="tab === 'guests'" (click)="tab = 'guests'">Convidados</button>
+      <button type="button" [class.active]="tab === 'rsvps'" (click)="tab = 'rsvps'">Confirmações</button>
     </nav>
 
-    @if (tab === 'guests') {
+    @if (tab === 'rsvps') {
+      <app-admin-rsvps />
+    } @else if (tab === 'guests') {
       <app-admin-guests (unauthorized)="isAuthenticated = false" />
     } @else {
     @if (error) { <p class="notice error-message" role="alert">{{ error }}</p> }

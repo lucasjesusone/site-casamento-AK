@@ -1,53 +1,82 @@
-@if (!code) {
-  <form class="search" (submit)="$event.preventDefault(); search(term.value)">
-    <label for="rsvp-search">Digite seu nome ou o nome da sua família</label>
-    <div class="search-row">
-      <input #term id="rsvp-search" type="text" autocomplete="off" minlength="3" maxlength="90" placeholder="Ex.: Maria Silva" />
-      <button type="submit" class="button button-primary" [disabled]="isSearching">{{ isSearching ? 'Buscando...' : 'Buscar' }}</button>
-    </div>
-    @if (searchError) { <p class="status error">{{ searchError }}</p> }
-    @if (searchDone && !searchResults.length) { <p class="hint">Não encontramos esse nome. Tente outra parte do nome ou fale com a gente.</p> }
-    @if (searchResults.length) {
-      <p class="hint">Toque na sua família:</p>
-      <ul class="results">
-        @for (result of searchResults; track result.code) {
-          <li><button type="button" (click)="select(result.code)">{{ result.familyName }}</button></li>
-        }
-      </ul>
-    }
-  </form>
-} @else if (isLoading) {
-  <app-monogram-loader label="Carregando seu convite..." />
-} @else if (isNotFound) {
-  <p class="rsvp-note">Este convite não foi encontrado ou o link foi substituído. <a href="#rsvp" (click)="code = ''; isNotFound = false">Procure pelo seu nome</a> ou fale com os noivos.</p>
-} @else if (errorMessage && !guests.length) {
-  <p class="status error">{{ errorMessage }}</p>
-} @else {
-  <div class="invite">
-    <p class="family-name">{{ familyName }}</p>
-    <p class="intro">Marque a resposta de cada integrante da família e salve.</p>
-
-    <ul class="guest-list">
-      @for (guest of guests; track guest.id) {
-        <li class="guest-row">
-          <div class="guest-info">
-            <strong>{{ guest.name }}</strong>
-            <span>{{ categoryLabels[guest.category] }}</span>
-          </div>
-          <div class="choice-group" role="group" [attr.aria-label]="'Resposta de ' + guest.name">
-            <button type="button" class="choice yes" [class.active]="choices[guest.id] === 'confirmed'" (click)="choose(guest, 'confirmed')">Vou</button>
-            <button type="button" class="choice no" [class.active]="choices[guest.id] === 'declined'" (click)="choose(guest, 'declined')">Não vou</button>
-          </div>
-        </li>
-      }
-    </ul>
-
-    <button type="button" class="button button-primary" (click)="submit()" [disabled]="isSubmitting || !canSubmit">
-      {{ isSubmitting ? 'Salvando...' : 'Salvar confirmação' }}
-    </button>
-    @if (!canSubmit) { <p class="hint">Escolha "Vou" ou "Não vou" para cada pessoa.</p> }
-
-    @if (successMessage) { <p class="status success">{{ successMessage }}</p> }
-    @if (errorMessage) { <p class="status error">{{ errorMessage }}</p> }
+<form class="rsvp-form" (ngSubmit)="submit()" #form="ngForm">
+  <div class="form-heading">
+    <span class="form-mark" aria-hidden="true">A <i>&</i> L</span>
+    <p>Vai ser uma alegria celebrar com você.</p>
   </div>
-}
+
+  @if (successMessage) {
+    <div class="status success" role="status">
+      <span class="success-mark" aria-hidden="true">✓</span>
+      <strong>Presença confirmada!</strong>
+      <p>Obrigado por responder. Estamos felizes em ter você com a gente.</p>
+    </div>
+    <button class="button button-secondary" type="button" (click)="reset()">Enviar outra confirmação</button>
+  } @else {
+    <label class="field">
+      <span>Nome completo do responsável</span>
+      <input
+        name="responsibleName"
+        type="text"
+        autocomplete="name"
+        maxlength="90"
+        required
+        [(ngModel)]="responsibleName"
+        placeholder="Ex.: Maria Silva"
+      />
+    </label>
+
+    <label class="field">
+      <span>Telefone para contato</span>
+      <input
+        name="phone"
+        type="tel"
+        inputmode="tel"
+        autocomplete="tel"
+        maxlength="24"
+        required
+        [(ngModel)]="phone"
+        placeholder="(00) 00000-0000"
+      />
+    </label>
+
+    <div class="guest-counts">
+      <label class="field">
+        <span>Quantidade de adultos</span>
+        <input name="adultCount" type="number" min="1" max="30" required [(ngModel)]="adultCount" />
+        <small>Inclua o responsável na contagem.</small>
+      </label>
+
+      <fieldset class="children-field">
+        <legend>Crianças e idades</legend>
+        @for (child of childAges; track child.id; let index = $index) {
+          <div class="child-age-row">
+            <label class="field">
+              <span>Idade da criança {{ index + 1 }}</span>
+              <input
+                [name]="'childAge' + index"
+                type="number"
+                min="0"
+                max="17"
+                required
+                [(ngModel)]="childAges[index].age"
+                placeholder="Idade"
+              />
+            </label>
+            <button class="remove-child" type="button" (click)="removeChild(index)" [attr.aria-label]="'Remover criança ' + (index + 1)">×</button>
+          </div>
+        }
+        <button class="add-child" type="button" (click)="addChild()" [disabled]="childAges.length >= 30">
+          <span aria-hidden="true">＋</span> {{ childAges.length ? 'Adicionar outra criança' : 'Adicionar criança' }}
+        </button>
+      </fieldset>
+    </div>
+
+    <p class="privacy-note">Usaremos seu telefone somente para falar sobre a confirmação do casamento.</p>
+
+    @if (errorMessage) { <p class="status error" role="alert">{{ errorMessage }}</p> }
+    <button class="button button-primary submit-button" type="submit" [disabled]="isSubmitting || !form.form.valid">
+      {{ isSubmitting ? 'Enviando confirmação...' : 'Confirmar presença' }}
+      @if (!isSubmitting) { <span aria-hidden="true">↗</span> }
+    </button>
+  }
+</form>

@@ -641,6 +641,73 @@ async function start() {
     return [...matches].slice(0, 8).map(([code, familyName]) => ({ code, familyName }));
   });
 
+  app.post('/api/rsvp', async (request, reply) => {
+    if (isRsvpRateLimited(request.ip)) {
+      return reply.code(429).send({ error: 'Muitas tentativas. Aguarde um minuto e tente novamente.' });
+    }
+
+    const body = (request.body || {}) as {
+      responsibleName?: unknown;
+      phone?: unknown;
+      adultCount?: unknown;
+      childAges?: unknown;
+    };
+    const responsibleName = typeof body.responsibleName === 'string' ? body.responsibleName.trim() : '';
+    const phone = typeof body.phone === 'string' ? body.phone.trim() : '';
+    const phoneDigits = phone.replace(/\D/g, '');
+    const childAges = body.childAges;
+    if (
+      !responsibleName ||
+      responsibleName.length > 90 ||
+      phone.length > 24 ||
+      phoneDigits.length < 10 ||
+      phoneDigits.length > 13 ||
+      !Number.isInteger(body.adultCount) ||
+      Number(body.adultCount) < 1 ||
+      Number(body.adultCount) > 30 ||
+      !Array.isArray(childAges) ||
+      childAges.length > 30 ||
+      childAges.some((age) => !Number.isInteger(age) || Number(age) < 0 || Number(age) > 17)
+    ) {
+      return reply.code(400).send({ error: 'Confira o nome, telefone e as quantidades informadas.' });
+    }
+
+    const id = crypto.randomUUID();
+    const createdAt = new Date().toISOString();
+    await database.query(
+      `insert into rsvp_submissions (id, responsible_name, phone, adult_count, child_ages, created_at)
+       values ($1, $2, $3, $4, $5, $6)`,
+      [id, responsibleName, phone, Number(body.adultCount), childAges, createdAt]
+    );
+    return reply.code(201).send({ id, createdAt });
+  });
+
+  app.get('/api/admin/rsvps', async (request, reply) => {
+    if (!requireAdmin(request.headers.authorization, reply)) {
+      return;
+    }
+
+    const result = await database.query<{
+      id: string;
+      responsible_name: string;
+      phone: string;
+      adult_count: number;
+      child_ages: number[];
+      created_at: string;
+    }>(
+      `select id, responsible_name, phone, adult_count, child_ages, created_at
+       from rsvp_submissions order by created_at desc`
+    );
+    return result.rows.map((row) => ({
+      id: row.id,
+      responsibleName: row.responsible_name,
+      phone: row.phone,
+      adultCount: row.adult_count,
+      childAges: row.child_ages,
+      createdAt: row.created_at
+    }));
+  });
+
   app.get('/api/rsvp/:code', async (request, reply) => {
     if (isRsvpRateLimited(request.ip)) {
       return reply.code(429).send({ error: 'Muitas tentativas. Aguarde um minuto e tente novamente.' });

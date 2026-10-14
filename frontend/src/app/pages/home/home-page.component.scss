@@ -242,6 +242,32 @@
   }
 }
 
+.countdown-banner {
+  display: grid;
+  grid-template-columns: minmax(210px, 1fr) auto;
+  align-items: center;
+  gap: 28px;
+  margin: 8px 0 54px;
+  padding: 25px clamp(22px, 4vw, 48px);
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 24px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(216, 189, 136, .2), transparent 28%),
+    linear-gradient(115deg, #63272d, #812f35 62%, #713036);
+  box-shadow: 0 22px 48px rgba(76, 35, 39, .17);
+}
+
+.countdown-copy .eyebrow { margin-bottom: 7px; color: #e7c596; }
+.countdown-copy h2 { margin: 0; color: #fff8f0; font-family: var(--font-serif); font-size: clamp(1.65rem, 3vw, 2.35rem); font-weight: 500; }
+.countdown-copy > p:last-child { margin: 6px 0 0; color: rgba(255, 248, 240, .72); font-size: .88rem; letter-spacing: .12em; text-transform: uppercase; }
+.countdown-units { display: flex; align-items: stretch; }
+.countdown-unit { display: grid; min-width: clamp(68px, 8vw, 96px); justify-items: center; gap: 2px; padding: 2px 12px; border-left: 1px solid rgba(255, 255, 255, .2); }
+.countdown-unit:first-child { border-left: 0; }
+.countdown-unit strong { color: #fff; font-family: var(--font-serif); font-size: clamp(1.7rem, 3.4vw, 2.45rem); font-weight: 500; font-variant-numeric: tabular-nums; line-height: 1.05; }
+.countdown-unit span { color: #e7c596; font-size: .65rem; letter-spacing: .12em; text-transform: uppercase; }
+.countdown-celebration { margin: 0; color: #fff8f0; font-family: var(--font-serif); font-size: 1.5rem; }
+
 .section-heading {
   margin-bottom: 22px;
 
@@ -503,15 +529,25 @@
 }
 
 .rsvp {
-  margin-top: 30px;
+  margin-top: 48px;
+  padding: clamp(26px, 5vw, 56px) clamp(18px, 5vw, 64px);
+  border: 1px solid rgba(76, 54, 54, .08);
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 100% 0, rgba(216, 189, 136, .12), transparent 30%),
+    rgba(255, 255, 255, .36);
 }
 
+.rsvp > .section-heading { text-align: center; }
+.rsvp-intro { max-width: 520px; margin: 12px auto 0; color: var(--text-soft); line-height: 1.7; }
 .rsvp-card {
-  background: rgba(255,255,255,0.6);
+  max-width: 820px;
+  margin: 28px auto 0;
   border: 1px solid rgba(76, 54, 54, 0.08);
-  border-radius: 28px;
-  padding: 30px 24px;
-  box-shadow: 0 18px 44px rgba(76, 54, 54, 0.05);
+  border-radius: 26px;
+  padding: clamp(22px, 4vw, 42px);
+  background: rgba(255, 255, 255, .7);
+  box-shadow: 0 22px 54px rgba(76, 54, 54, 0.08);
 }
 
 .rsvp-form {
@@ -1128,6 +1164,12 @@
     grid-template-columns: 1fr;
   }
 
+  .countdown-banner {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
   .countdown {
     grid-template-columns: 1fr;
   }
@@ -1198,6 +1240,12 @@
   .hero {
     padding-top: 8px;
   }
+
+  .countdown-banner { gap: 18px; margin-bottom: 38px; padding: 22px 12px; }
+  .countdown-unit { min-width: 0; flex: 1; padding: 2px 7px; }
+  .countdown-unit strong { font-size: 1.6rem; }
+  .countdown-unit span { font-size: .58rem; letter-spacing: .07em; }
+  .countdown-copy h2 { font-size: 1.7rem; }
 
   .hero-copy h1 {
     font-size: 2.3rem;

@@ -46,3 +46,12 @@ create table if not exists guests (
 );
 
 create index if not exists guests_family_id_idx on guests(family_id);
+
+create table if not exists rsvp_submissions (
+  id text primary key,
+  responsible_name text not null,
+  phone text not null,
+  adult_count integer not null check (adult_count between 1 and 30),
+  child_ages integer[] not null default '{}',
+  created_at text not null
+);

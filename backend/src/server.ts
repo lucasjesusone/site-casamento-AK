@@ -73,6 +73,35 @@ async function readGifts(): Promise<Gift[]> {
   return result.rows.map(mapGift);
 }
 
+// Adulto e jovem a partir de 13 anos = 1 convite; 7 a 12 anos = meio convite; até 6 anos = isento.
+function inviteWeightForChild(age: number): number {
+  if (age >= 13) {
+    return 1;
+  }
+  return age >= 7 ? 0.5 : 0;
+}
+
+function guestLimit(): number {
+  const configured = Number(process.env['GUEST_LIMIT']);
+  return Number.isFinite(configured) && configured > 0 ? configured : 180;
+}
+
+function formatInvites(value: number): string {
+  const text = String(value).replace('.', ',');
+  return `${text} ${value === 1 ? 'convite' : 'convites'}`;
+}
+
+async function usedInvites(executor: { query: Pool['query'] }): Promise<number> {
+  const result = await executor.query<{ used: number }>(
+    `select (
+       coalesce(sum(adult_count), 0) +
+       coalesce(sum((select sum(case when age >= 13 then 1 when age >= 7 then 0.5 else 0 end) from unnest(child_ages) as age)), 0)
+     )::float8 as used
+     from rsvp_submissions`
+  );
+  return Number(result.rows[0]?.used ?? 0);
+}
+
 async function getStoredOrder(id: string): Promise<StoredOrder | undefined> {
   const result = await database.query<StoredOrder>(
     'select id, total::float8 as total, status from orders where id = $1',
@@ -739,12 +768,45 @@ async function start() {
 
     const id = crypto.randomUUID();
     const createdAt = new Date().toISOString();
-    await database.query(
-      `insert into rsvp_submissions (id, responsible_name, phone, adult_count, child_ages, adult_names, children, created_at)
-       values ($1, $2, $3, $4, $5, $6, $7, $8)`,
-      [id, responsibleName, phone, adultNames.length, children.map((child) => child.age), adultNames, JSON.stringify(children.map((child) => ({ name: child.name.trim(), age: child.age }))), createdAt]
-    );
+    const requestedInvites = adultNames.length + children.reduce((total, child) => total + inviteWeightForChild(child.age), 0);
+    const limit = guestLimit();
+    const client = await database.connect();
+    try {
+      await client.query('begin');
+      await client.query('select pg_advisory_xact_lock(180)');
+      const used = await usedInvites(client);
+      if (used + requestedInvites > limit) {
+        await client.query('rollback');
+        const remaining = Math.max(0, limit - used);
+        return reply.code(409).send({
+          error: remaining <= 0
+            ? 'As confirmações foram encerradas porque atingimos o limite de convidados. Fale com os noivos.'
+            : `Restam apenas ${formatInvites(remaining)} e esta confirmação usa ${formatInvites(requestedInvites)}. Ajuste a lista ou fale com os noivos.`
+        });
+      }
+      await client.query(
+        `insert into rsvp_submissions (id, responsible_name, phone, adult_count, child_ages, adult_names, children, created_at)
+         values ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        [id, responsibleName, phone, adultNames.length, children.map((child) => child.age), adultNames, JSON.stringify(children.map((child) => ({ name: child.name.trim(), age: child.age }))), createdAt]
+      );
+      await client.query('commit');
+    } catch (error) {
+      await client.query('rollback').catch(() => undefined);
+      throw error;
+    } finally {
+      client.release();
+    }
     return reply.code(201).send({ id, createdAt });
+  });
+
+  app.get('/api/admin/rsvp-capacity', async (request, reply) => {
+    if (!requireAdmin(request.headers.authorization, reply)) {
+      return;
+    }
+
+    const limit = guestLimit();
+    const used = await usedInvites(database);
+    return { limit, used, remaining: Math.max(0, limit - used) };
   });
 
   app.get('/api/admin/rsvps', async (request, reply) => {

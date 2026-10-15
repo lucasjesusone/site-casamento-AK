@@ -5,14 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { type CloudinaryImage, type Gift } from '../../data/gift';
 import { GiftService } from '../../services/gift.service';
-import { AdminGuestsComponent } from './admin-guests.component';
 import { AdminOrdersComponent } from './admin-orders.component';
 import { AdminRsvpsComponent } from './admin-rsvps.component';
 
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  imports: [MonogramLoaderComponent, CommonModule, FormsModule, RouterLink, AdminGuestsComponent, AdminOrdersComponent, AdminRsvpsComponent],
+  imports: [MonogramLoaderComponent, CommonModule, FormsModule, RouterLink, AdminOrdersComponent, AdminRsvpsComponent],
   templateUrl: './admin-page.component.html',
   styleUrls: ['./admin-page.component.scss']
 })
@@ -20,7 +19,7 @@ export class AdminPageComponent implements OnInit {
   private readonly giftService = inject(GiftService);
 
   isAuthenticated = false;
-  tab: 'gifts' | 'orders' | 'guests' | 'rsvps' = 'gifts';
+  tab: 'gifts' | 'orders' | 'rsvps' = 'gifts';
   isUploading = false;
   isLoading = false;
   isSaving = false;

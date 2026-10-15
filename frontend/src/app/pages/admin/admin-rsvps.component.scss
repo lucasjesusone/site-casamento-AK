@@ -7,7 +7,19 @@
 .primary-button { border: 0; color: #fffdf6; background: var(--accent-olive); }
 .secondary-button { border: 1px solid var(--border-soft); color: var(--accent-olive); background: #fff; }
 .actions button:disabled { opacity: .5; cursor: not-allowed; }
-.rsvp-totals { display: flex; gap: 12px; }
+.rsvp-totals { display: flex; flex-wrap: wrap; gap: 12px; }
+.capacity { display: grid; gap: 10px; padding: 18px 20px; border: 1px solid var(--border-soft); background: #fff; }
+.capacity-numbers { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.capacity-numbers strong { color: var(--accent-gold-deep); font-family: var(--font-serif); font-size: 1.9rem; font-weight: 600; }
+.capacity-numbers strong span { color: var(--text-soft); font: 500 .85rem var(--font-sans); }
+.capacity-numbers em { color: var(--text-soft); font-size: .85rem; font-style: normal; font-weight: 600; }
+.capacity-bar { height: 8px; overflow: hidden; border-radius: 999px; background: var(--bg-blush); }
+.capacity-bar span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent-gold), var(--accent-gold-deep)); }
+.capacity.full .capacity-bar span { background: var(--danger-ink); }
+.capacity.full .capacity-numbers em { color: var(--danger-ink); }
+.capacity-rule { margin: 0; color: var(--text-soft); font-size: .76rem; }
+.invite-line { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.invite-badge { border-radius: 999px; padding: 4px 10px; color: var(--accent-gold-deep); background: rgba(194, 154, 74, .14); font-size: .72rem; font-weight: 700; }
 .rsvp-totals div { display: grid; min-width: 120px; gap: 3px; padding: 14px 18px; border: 1px solid var(--border-soft); background: #fff; }
 .rsvp-totals strong { color: var(--accent-olive); font-family: var(--font-serif); font-size: 1.7rem; }
 .rsvp-totals span { color: var(--text-soft); font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; }

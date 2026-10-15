@@ -18,6 +18,12 @@ export interface RsvpSubmission {
   createdAt: string;
 }
 
+export interface RsvpCapacity {
+  limit: number;
+  used: number;
+  remaining: number;
+}
+
 export class RsvpError extends Error {
   constructor(message: string, readonly status: number) {
     super(message);
@@ -38,6 +44,10 @@ export class RsvpService {
 
   async getSubmissions(): Promise<RsvpSubmission[]> {
     return this.giftService.request<RsvpSubmission[]>(apiUrl('/api/admin/rsvps'));
+  }
+
+  async getCapacity(): Promise<RsvpCapacity> {
+    return this.giftService.request<RsvpCapacity>(apiUrl('/api/admin/rsvp-capacity'));
   }
 
   async search(query: string): Promise<Array<{ code: string; familyName: string }>> {

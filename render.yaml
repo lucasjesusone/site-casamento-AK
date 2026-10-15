@@ -25,7 +25,7 @@ services:
       - key: MERCADOPAGO_WEBHOOK_URL
         value: https://sitecasamento-api.onrender.com/api/payments/mercadopago/webhook
       - key: MERCADOPAGO_SANDBOX
-        value: "true"
+        value: "false"
       - key: CLOUDINARY_CLOUD_NAME
         sync: false
       - key: CLOUDINARY_GALLERY_FOLDER

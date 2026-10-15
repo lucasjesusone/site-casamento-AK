@@ -2,9 +2,24 @@ import { Injectable } from '@angular/core';
 import { type CloudinaryImage, type Gift } from '../data/gift';
 import { apiUrl } from './api-url';
 
+export interface GiftOrder {
+  id: string;
+  status: string;
+  total: number;
+  paymentMethod: string | null;
+  buyerName: string | null;
+  message: string | null;
+  createdAt: string;
+  items: Array<{ title: string; quantity: number; unitAmount: number }>;
+}
+
 @Injectable({ providedIn: 'root' })
 export class GiftService {
   private readonly sessionKey = 'sitecasamento-admin-token';
+
+  getOrders(): Promise<GiftOrder[]> {
+    return this.request<GiftOrder[]>(apiUrl('/api/admin/orders'));
+  }
 
   async loadPublicGifts(): Promise<Gift[]> {
     const response = await fetch(apiUrl('/api/gifts'));
@@ -14,11 +29,11 @@ export class GiftService {
     return (await response.json()) as Gift[];
   }
 
-  async createCheckout(items: Array<{ giftId: string; quantity: number }>): Promise<{ orderId: string; checkoutUrl: string }> {
+  async createCheckout(items: Array<{ giftId: string; quantity: number }>, buyerName: string, message: string): Promise<{ orderId: string; checkoutUrl: string }> {
     const response = await fetch(apiUrl('/api/checkout'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items })
+      body: JSON.stringify({ items, buyerName, message })
     });
     const result = (await response.json()) as { orderId?: string; checkoutUrl?: string; error?: string };
     if (!response.ok || !result.orderId || !result.checkoutUrl) {

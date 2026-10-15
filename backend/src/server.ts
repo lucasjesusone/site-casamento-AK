@@ -238,9 +238,18 @@ async function start() {
       return reply.code(503).send({ error: 'MERCADOPAGO_WEBHOOK_URL precisa ser HTTPS público e usar o caminho /api/payments/mercadopago/webhook.' });
     }
 
-    const body = (request.body || {}) as { items?: CheckoutItemRequest[] };
+    const body = (request.body || {}) as { items?: CheckoutItemRequest[]; buyerName?: unknown; message?: unknown };
     if (!Array.isArray(body.items) || body.items.length === 0 || body.items.length > 30) {
       return reply.code(400).send({ error: 'O carrinho não contém itens válidos.' });
+    }
+
+    const buyerName = typeof body.buyerName === 'string' ? body.buyerName.trim().replace(/\s+/g, ' ') : '';
+    const buyerMessage = typeof body.message === 'string' ? body.message.trim() : '';
+    if (buyerName.length < 2 || buyerName.length > 90) {
+      return reply.code(400).send({ error: 'Informe seu nome para os noivos saberem quem presenteou.' });
+    }
+    if (buyerMessage.length > 500) {
+      return reply.code(400).send({ error: 'A mensagem pode ter no máximo 500 caracteres.' });
     }
 
     const requestedItems = new Map<string, number>();
@@ -278,8 +287,8 @@ async function start() {
     try {
       await client.query('begin');
       await client.query(
-        'insert into orders (id, status, total, currency, created_at, updated_at) values ($1, $2, $3, $4, $5, $6)',
-        [orderId, 'checkout_created', total, 'BRL', now, now]
+        'insert into orders (id, status, total, currency, buyer_name, buyer_message, created_at, updated_at) values ($1, $2, $3, $4, $5, $6, $7, $8)',
+        [orderId, 'checkout_created', total, 'BRL', buyerName, buyerMessage || null, now, now]
       );
       for (const item of items) {
         await client.query(
@@ -377,6 +386,43 @@ async function start() {
       );
       return reply.code(502).send({ error: 'Não foi possível conectar ao Mercado Pago. Tente novamente.' });
     }
+  });
+
+  app.get('/api/admin/orders', async (request, reply) => {
+    if (!requireAdmin(request.headers.authorization, reply)) {
+      return;
+    }
+
+    const result = await database.query<{
+      id: string;
+      status: string;
+      total: number;
+      payment_method: string | null;
+      buyer_name: string | null;
+      buyer_message: string | null;
+      created_at: string;
+      items: Array<{ title: string; quantity: number; unitAmount: number }>;
+    }>(
+      `select o.id, o.status, o.total::float8 as total, o.payment_method, o.buyer_name, o.buyer_message, o.created_at,
+         coalesce(
+           (select json_agg(json_build_object('title', i.title, 'quantity', i.quantity, 'unitAmount', i.unit_amount::float8) order by i.title)
+            from order_items i where i.order_id = o.id),
+           '[]'::json
+         ) as items
+       from orders o
+       where o.status not in ('checkout_created', 'checkout_error')
+       order by o.created_at desc`
+    );
+    return result.rows.map((row) => ({
+      id: row.id,
+      status: row.status,
+      total: row.total,
+      paymentMethod: row.payment_method,
+      buyerName: row.buyer_name,
+      message: row.buyer_message,
+      createdAt: row.created_at,
+      items: row.items
+    }));
   });
 
   app.get('/api/orders/:id', async (request, reply) => {

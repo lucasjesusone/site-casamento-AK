@@ -1,0 +1,52 @@
+<section class="orders-dashboard">
+  <div class="orders-heading">
+    <div>
+      <p class="eyebrow">Quem presenteou</p>
+      <h2>Presentes recebidos <span>{{ orders.length }}</span></h2>
+    </div>
+    <div class="actions">
+      <button type="button" class="secondary-button" (click)="load()" [disabled]="isLoading">Atualizar</button>
+      <button type="button" class="primary-button" (click)="exportCsv()" [disabled]="!orders.length">Exportar CSV</button>
+    </div>
+  </div>
+
+  @if (orders.length) {
+    <div class="orders-totals" aria-label="Resumo dos presentes">
+      <div><strong>{{ paidTotal | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong><span>recebido</span></div>
+      <div><strong>{{ paidOrders.length }}</strong><span>pagos</span></div>
+      <div><strong>{{ messageCount }}</strong><span>mensagens</span></div>
+      @if (waitingCount) { <div><strong>{{ waitingCount }}</strong><span>aguardando</span></div> }
+    </div>
+  }
+
+  @if (error) { <p class="notice error-message" role="alert">{{ error }}</p> }
+  @if (isLoading) {
+    <p class="loading-state">Carregando presentes...</p>
+  } @else if (!orders.length) {
+    <div class="empty-state"><span class="empty-mark" aria-hidden="true">♡</span><p>Nenhum presente recebido ainda.</p></div>
+  } @else {
+    <div class="order-list">
+      @for (order of orders; track order.id) {
+        <article class="order-card">
+          <div class="order-heading">
+            <h3>{{ order.buyerName || 'Nome não informado' }}</h3>
+            <span [class]="'status ' + tone(order.status)">{{ statusLabel(order.status) }}</span>
+          </div>
+          <div class="order-meta">
+            <strong>{{ order.total | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+            <span>{{ methodLabel(order.paymentMethod) }}</span>
+            <time [attr.datetime]="order.createdAt">{{ formatDate(order.createdAt) }}</time>
+          </div>
+          <ul class="order-items">
+            @for (item of order.items; track item.title) {
+              <li><span>{{ item.quantity }}×</span> {{ item.title }}</li>
+            }
+          </ul>
+          @if (order.message) {
+            <blockquote class="order-message">“{{ order.message }}”</blockquote>
+          }
+        </article>
+      }
+    </div>
+  }
+</section>

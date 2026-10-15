@@ -19,6 +19,9 @@ create table if not exists orders (
   updated_at text not null
 );
 
+alter table orders add column if not exists buyer_name text;
+alter table orders add column if not exists buyer_message text;
+
 create table if not exists order_items (
   order_id text not null references orders(id) on delete cascade,
   gift_id text not null,

@@ -274,6 +274,17 @@
               }
             </div>
             <footer class="cart-summary">
+              <div class="buyer-fields">
+                <label>
+                  <span>Seu nome</span>
+                  <input type="text" name="buyerName" autocomplete="name" maxlength="90" placeholder="Como devemos agradecer?" [value]="buyerName" [class.invalid]="buyerNameError" (input)="setBuyerName($any($event.target).value)" />
+                  @if (buyerNameError) { <small role="alert">{{ buyerNameError }}</small> }
+                </label>
+                <label>
+                  <span>Mensagem para os noivos <em>(opcional)</em></span>
+                  <textarea name="buyerMessage" rows="3" maxlength="500" placeholder="Deixe um recado carinhoso" [value]="buyerMessage" (input)="setBuyerMessage($any($event.target).value)"></textarea>
+                </label>
+              </div>
               <div class="cart-total"><span>Total simbólico</span><strong>{{ cartTotal | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong></div>
               @if (checkoutError) { <p class="checkout-notice" role="alert">{{ checkoutError }}</p> }
               <div class="cart-actions">

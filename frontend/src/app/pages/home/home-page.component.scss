@@ -1129,6 +1129,15 @@
 .continue-shopping-button:hover { background: var(--success-wash); }
 .checkout-button:disabled { opacity: 0.56; cursor: not-allowed; }
 .cart-summary > p { margin: 0; color: var(--text-soft); font-size: 0.78rem; text-align: center; }
+.buyer-fields { display: grid; gap: 12px; }
+.buyer-fields label { display: grid; gap: 6px; color: var(--text-strong); font-size: 0.84rem; font-weight: 600; }
+.buyer-fields em { color: var(--text-soft); font-style: normal; font-weight: 400; }
+.buyer-fields input,
+.buyer-fields textarea { width: 100%; border: 1px solid var(--border-soft); border-radius: 4px; padding: 10px 12px; color: var(--text-strong); background: #fff; font: inherit; font-weight: 400; resize: vertical; }
+.buyer-fields input:focus,
+.buyer-fields textarea:focus { outline: 2px solid rgba(194, 154, 74, 0.28); border-color: var(--accent-gold); }
+.buyer-fields input.invalid { border-color: var(--danger-ink); }
+.buyer-fields small { color: var(--danger-ink); font-weight: 500; }
 .checkout-notice { margin: 0; border-left: 3px solid var(--accent-gold); padding: 10px 12px; color: var(--text-soft); background: var(--bg-blush); font-size: 0.84rem; line-height: 1.55; }
 
 .cart-empty {

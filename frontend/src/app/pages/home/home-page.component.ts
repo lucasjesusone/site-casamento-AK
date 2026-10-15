@@ -54,6 +54,9 @@ export class HomePageComponent implements OnInit, OnDestroy {
   cartItems: GiftCartItem[] = [];
   isCartOpen = false;
   checkoutError = '';
+  buyerName = '';
+  buyerMessage = '';
+  buyerNameError = '';
   isCheckoutLoading = false;
   paymentReturnMessage = '';
   paymentReturnStatus: 'success' | 'pending' | 'failure' | '' = '';
@@ -61,6 +64,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
   countdown = { days: 0, hours: 0, minutes: 0, seconds: 0 };
   isWeddingDay = false;
   private readonly cartStorageKey = 'sitecasamento-gift-cart';
+  private readonly buyerStorageKey = 'sitecasamento-gift-buyer';
 
   ngOnInit(): void {
     this.startGalleryAutoplay();
@@ -176,12 +180,31 @@ export class HomePageComponent implements OnInit, OnDestroy {
     this.isCartOpen = false;
   }
 
+  setBuyerName(value: string): void {
+    this.buyerName = value;
+    this.buyerNameError = '';
+    this.persistBuyer();
+  }
+
+  setBuyerMessage(value: string): void {
+    this.buyerMessage = value;
+    this.persistBuyer();
+  }
+
   async finalizePurchase(): Promise<void> {
     this.checkoutError = '';
+    const buyerName = this.buyerName.trim().replace(/\s+/g, ' ');
+    if (buyerName.length < 2) {
+      this.buyerNameError = 'Informe seu nome para os noivos saberem quem presenteou.';
+      return;
+    }
+
     this.isCheckoutLoading = true;
     try {
       const checkout = await this.giftService.createCheckout(
-        this.cartItems.map(({ gift, quantity }) => ({ giftId: gift.id, quantity }))
+        this.cartItems.map(({ gift, quantity }) => ({ giftId: gift.id, quantity })),
+        buyerName,
+        this.buyerMessage.trim()
       );
       window.location.assign(checkout.checkoutUrl);
     } catch (error) {
@@ -252,8 +275,17 @@ export class HomePageComponent implements OnInit, OnDestroy {
       if (stored) {
         this.cartItems = JSON.parse(stored) as GiftCartItem[];
       }
+      const buyer = JSON.parse(window.localStorage.getItem(this.buyerStorageKey) || '{}') as { name?: string; message?: string };
+      this.buyerName = buyer.name || '';
+      this.buyerMessage = buyer.message || '';
     } catch {
       this.cartItems = [];
+    }
+  }
+
+  private persistBuyer(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      window.localStorage.setItem(this.buyerStorageKey, JSON.stringify({ name: this.buyerName, message: this.buyerMessage }));
     }
   }
 

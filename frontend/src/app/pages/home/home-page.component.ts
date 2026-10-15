@@ -1,6 +1,6 @@
 import { MonogramLoaderComponent } from '../../components/monogram-loader.component';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, ElementRef, inject, OnDestroy, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, inject, OnDestroy, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { RsvpFormComponent } from '../rsvp/rsvp-page.component';
 import { weddingData } from '../../data/wedding-data';
@@ -28,6 +28,11 @@ export class HomePageComponent implements OnInit, OnDestroy {
   @ViewChild('giftPagesViewport') private giftPagesViewport?: ElementRef<HTMLDivElement>;
   private galleryTimer?: ReturnType<typeof setInterval>;
   private countdownTimer?: ReturnType<typeof setInterval>;
+
+  @HostListener('window:pageshow')
+  resetCheckoutLoading(): void {
+    this.isCheckoutLoading = false;
+  }
   private readonly weddingMoment = new Date('2027-07-10T00:00:00-03:00').getTime();
 
   readonly title = weddingData.couple.names;

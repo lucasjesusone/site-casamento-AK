@@ -1,4 +1,4 @@
-ï»¿<!doctype html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
@@ -6,17 +6,21 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f7f4eb">
-  <meta name="description" content="Vamos celebrar o comeÃ§o da nossa histÃ³ria â€” Ana Karinne & Lucas Gabriel, 10 de julho de 2027.">
+  <meta name="description" content="Vamos celebrar o começo da nossa história — Ana Karinne & Lucas Gabriel, 10 de julho de 2027.">
   <link rel="icon" type="image/png" href="assets/monograma.png">
   <script src="assets/runtime-config.js"></script>
   <script>
-    // Para pausar o site: troque para true, faÃ§a commit e push. Volte para false para reabrir.
-    var SITE_PAUSED = false;
-    if (SITE_PAUSED) { document.documentElement.classList.add('paused'); document.title = ''; }
+    // Para pausar o site: troque para true, faça commit e push. Volte para false para reabrir.
+    var SITE_PAUSED = true;
+    if (SITE_PAUSED) { document.documentElement.classList.add('paused'); document.title = 'Ana Karinne & Lucas Gabriel'; }
   </script>
   <style>
-    html.paused body { background: #fff; }
+    #offline { display: none; }
     html.paused body > * { display: none !important; }
+    html.paused body > #offline { display: flex !important; position: fixed; inset: 0; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; background: #f7f4eb; text-align: center; color: #5f6350; }
+    #offline h1 { margin: 0; color: #8d6727; font: italic 600 clamp(2rem, 7vw, 3rem) 'Cormorant Garamond', Georgia, serif; }
+    #offline p { max-width: 32ch; margin: 0; font: 16px/1.6 Georgia, serif; }
+    #offline hr { width: 90px; height: 2px; margin: 4px 0; border: 0; background: linear-gradient(90deg, transparent, #c29a4a, transparent); }
     #splash { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; background: #f7f4eb; transition: opacity .6s ease, visibility .6s ease; }
     #splash.hide { opacity: 0; visibility: hidden; pointer-events: none; }
     #splash img { width: min(42vw, 170px); height: auto; mix-blend-mode: multiply; animation: splash-pulse 1.8s ease-in-out infinite; }
@@ -30,7 +34,13 @@
 <body>
   <div id="splash" role="status" aria-label="Carregando">
     <img src="assets/monograma.png" alt="Monograma Ana Karinne e Lucas Gabriel">
-    <p>Vamos celebrar o comeÃ§o da nossa histÃ³ria</p>
+    <p>Vamos celebrar o começo da nossa história</p>
+  </div>
+  <div id="offline">
+    <h1>Ana Karinne &amp; Lucas Gabriel</h1>
+    <hr>
+    <p>Este site está temporariamente fora do ar.</p>
+    <p>Voltaremos em breve.</p>
   </div>
   <app-root></app-root>
 </body>

@@ -73,9 +73,9 @@ async function readGifts(): Promise<Gift[]> {
   return result.rows.map(mapGift);
 }
 
-// Adulto e jovem a partir de 13 anos = 1 convite; 7 a 12 anos = meio convite; até 6 anos = isento.
+// Adulto e jovem a partir de 12 anos = 1 convite; 7 a 11 anos = meio convite; até 6 anos = isento.
 function inviteWeightForChild(age: number): number {
-  if (age >= 13) {
+  if (age >= 12) {
     return 1;
   }
   return age >= 7 ? 0.5 : 0;
@@ -95,7 +95,7 @@ async function usedInvites(executor: { query: Pool['query'] }): Promise<number> 
   const result = await executor.query<{ used: number }>(
     `select (
        coalesce(sum(adult_count), 0) +
-       coalesce(sum((select sum(case when age >= 13 then 1 when age >= 7 then 0.5 else 0 end) from unnest(child_ages) as age)), 0)
+       coalesce(sum((select sum(case when age >= 12 then 1 when age >= 7 then 0.5 else 0 end) from unnest(child_ages) as age)), 0)
      )::float8 as used
      from rsvp_submissions`
   );

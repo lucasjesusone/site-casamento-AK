@@ -1,8 +1,8 @@
 export const DEFAULT_GUEST_LIMIT = 180;
 
-// Adulto e jovem a partir de 13 anos = 1 convite; 7 a 12 anos = meio convite; até 6 anos = isento.
+// Adulto e jovem a partir de 12 anos = 1 convite; 7 a 11 anos = meio convite; até 6 anos = isento.
 export function inviteWeightForChild(age: number): number {
-  if (age >= 13) {
+  if (age >= 12) {
     return 1;
   }
   return age >= 7 ? 0.5 : 0;

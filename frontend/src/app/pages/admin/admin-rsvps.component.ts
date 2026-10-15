@@ -43,11 +43,11 @@ export class AdminRsvpsComponent implements OnInit {
   }
 
   get fullCount(): number {
-    return this.countChildren((age) => age >= 13) + this.adultTotal;
+    return this.countChildren((age) => age >= 12) + this.adultTotal;
   }
 
   get halfCount(): number {
-    return this.countChildren((age) => age >= 7 && age <= 12);
+    return this.countChildren((age) => age >= 7 && age <= 11);
   }
 
   get freeCount(): number {
